@@ -17,7 +17,7 @@
   <!-- deploy file (배포 파일) 버전 -->
 	<version>1.0.0-BUILD-SNAPSHOT</version>
   
-  <!-- deploy file (배포 파일) 이름 = prj01-1.0.0-build-snapshot.war = artifactId + version + packaging -->
+  <!-- deploy file (배포 파일) 이름 = artifactId + version + packaging = prj01-1.0.0-build-snapshot.war  -->
   
   <!-- springframework 버전 : 2022년 04월 버전 (다른 버전들도 springframwork 버전에 맞춰서 작성함) -->
 	<properties>

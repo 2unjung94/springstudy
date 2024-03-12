@@ -17,7 +17,7 @@
     computer1.setPrice(200);
     computer1.setCalculator(new Calculator());
     ========================================================================
-    * property 가 set 역할을 한다. 기본 타입은 value, bean 이름을 쓸 때 ref
+    * property 가 set 역할을 한다. 기본 타입은 value, 생성된 bean 이름을 쓸 때 ref
     * scope 생략 가능. default 는 singleton
    -->
   <bean class="com.gdu.prj01.xml01.Computer"
