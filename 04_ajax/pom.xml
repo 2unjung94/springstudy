@@ -1,12 +1,12 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/maven-v4_0_0.xsd">
-	<modelVersion>4.0.0</modelVersion>
-	<groupId>com.gdu</groupId>
-	<artifactId>prj03</artifactId>
-	<name>03_DI</name>
-	<packaging>war</packaging>
-	<version>1.0.0-BUILD-SNAPSHOT</version>
+  xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/maven-v4_0_0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+  <groupId>com.gdu</groupId>
+  <artifactId>prj04</artifactId>
+  <name>04_ajax</name>
+  <packaging>war</packaging>
+  <version>1.0.0-BUILD-SNAPSHOT</version>
   <properties>
     <java-version>11</java-version>
     <org.springframework-version>5.3.19</org.springframework-version>
@@ -15,6 +15,15 @@
   </properties>
   
   <dependencies>
+  
+    <!-- jackson : java 에서 list, map 을 json, xml 으로 자동 변환해주는 라이브러리 -->
+    <!-- https://mvnrepository.com/artifact/com.fasterxml.jackson.core/jackson-databind -->
+    <dependency>
+      <groupId>com.fasterxml.jackson.core</groupId>
+      <artifactId>jackson-databind</artifactId>
+      <version>2.16.1</version>
+    </dependency>
+  
     <!-- https://mvnrepository.com/artifact/org.projectlombok/lombok -->
     <dependency>
       <groupId>org.projectlombok</groupId>
@@ -92,21 +101,21 @@
           <artifactId>jmxtools</artifactId>
         </exclusion>
         <exclusion>
-  				<groupId>com.sun.jmx</groupId>
-					<artifactId>jmxri</artifactId>
-				</exclusion>
-			</exclusions>
-			<scope>runtime</scope>
-		</dependency>
+          <groupId>com.sun.jmx</groupId>
+          <artifactId>jmxri</artifactId>
+        </exclusion>
+      </exclusions>
+      <scope>runtime</scope>
+    </dependency>
 
-		<!-- @Inject -->
-		<dependency>
-			<groupId>javax.inject</groupId>
-			<artifactId>javax.inject</artifactId>
-			<version>1</version>
-		</dependency>
-				
-		<!-- Servlet -->
+    <!-- @Inject -->
+    <dependency>
+      <groupId>javax.inject</groupId>
+      <artifactId>javax.inject</artifactId>
+      <version>1</version>
+    </dependency>
+        
+    <!-- Servlet -->
     <!-- https://mvnrepository.com/artifact/javax.servlet/javax.servlet-api -->
     <dependency>
       <groupId>javax.servlet</groupId>
@@ -123,22 +132,22 @@
       <scope>provided</scope>
     </dependency>
 
-		<dependency>
-			<groupId>javax.servlet</groupId>
-			<artifactId>jstl</artifactId>
-			<version>1.2</version>
-		</dependency>
-	
-		<!-- Test -->
+    <dependency>
+      <groupId>javax.servlet</groupId>
+      <artifactId>jstl</artifactId>
+      <version>1.2</version>
+    </dependency>
+  
+    <!-- Test -->
     <!-- JUnit 적어놓으면 hamcrest 는 자동으로 설치된다. (둘은 의존관계) -->
-		<dependency>
-			<groupId>junit</groupId>
-			<artifactId>junit</artifactId>
-			<version>4.13.2</version>
-			<scope>test</scope>
-		</dependency> 
+    <dependency>
+      <groupId>junit</groupId>
+      <artifactId>junit</artifactId>
+      <version>4.13.2</version>
+      <scope>test</scope>
+    </dependency> 
            
-	</dependencies>
+  </dependencies>
   
   <build>
     
