@@ -57,7 +57,9 @@ public class ContactServiceImpl implements ContactService {
   public void modifyContact(HttpServletRequest request, HttpServletResponse response) {
     // 수정(성공->상세보기, 실패->뒤로가기)
     // 수정할 데이터 생성
+    int contactNo = Integer.parseInt(request.getParameter("contact-no"));
     ContactDto contact = ContactDto.builder()
+                            .contactNo(contactNo)
                             .name(request.getParameter("name"))
                             .mobile(request.getParameter("mobile"))
                             .email(request.getParameter("email"))
@@ -74,7 +76,7 @@ public class ContactServiceImpl implements ContactService {
       out.println("<script>");
       if(updateCount == 1) {
         out.println("alert('연락처가 수정되었습니다')");
-        out.println("location.href='" + request.getContextPath() + "/contact/detail.do?contactNo=" +contact.getContactNo() + "'");
+        out.println("location.href='" + request.getContextPath() + "/contact/detail.do?contact-no=" +contact.getContactNo() + "'");
       } else {
         out.println("alert('연락처 수정되지 않았습니다.')");
         out.println("history.back()");

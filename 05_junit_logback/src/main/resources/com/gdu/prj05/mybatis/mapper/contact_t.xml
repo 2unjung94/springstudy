@@ -54,7 +54,7 @@
       , TO_CHAR(CURRENT_DATE, 'YYYY-MM-DD HH24:MI:SS')
     )
   </insert>
-  
+
   <update id="modifyContact"
           parameterType="ContactDto">
     UPDATE CONTACT_T
@@ -64,21 +64,20 @@
          , ADDRESS = #{address}
      WHERE CONTACT_NO = #{contactNo}
   </update>
-  
+
   <delete id="removeContact">
     DELETE
       FROM CONTACT_T
      WHERE CONTACT_NO = #{contactNo}
   </delete>
   
-  <!-- List 반환이면 List의 타입(List<여기>)을 resultType으로 한다 -->
   <select id="getContactList"
-          resultType="ContactDto">  
+          resultType="ContactDto">
     SELECT CONTACT_NO, NAME, MOBILE, EMAIL, ADDRESS, CREATED_AT
       FROM CONTACT_T
      ORDER BY CONTACT_NO DESC
   </select>
-  
+
   <select id="getContactByNo"
           resultType="ContactDto">
     SELECT CONTACT_NO, NAME, MOBILE, EMAIL, ADDRESS, CREATED_AT

@@ -3,45 +3,41 @@
   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
   xsi:schemaLocation="http://www.springframework.org/schema/beans https://www.springframework.org/schema/beans/spring-beans.xsd">
   
-  <!-- bean 을 만들어 두는 곳 -->
   <!-- Root Context: defines shared resources visible to all other web components -->
-   
-  <!-- db connect bean  -->
+    
   <bean class="com.zaxxer.hikari.HikariConfig"
         id="hikariConfig"
         scope="singleton">
-    <property name="driverClassName" value="oracle.jdbc.OracleDriver"/>
-    <property name="jdbcUrl" value="jdbc:oracle:thin:@localhost:1521:xe"/>
+    <property name="driverClassName" value="net.sf.log4jdbc.sql.jdbcapi.DriverSpy"/>
+    <property name="jdbcUrl" value="jdbc:log4jdbc:oracle:thin:@localhost:1521:xe"/>
     <property name="username" value="GD"/>
     <property name="password" value="1111"/>
   </bean>
   
-  <!-- db connection pool bean -->
   <bean class="com.zaxxer.hikari.HikariDataSource"
         id="hikariDataSource"
         scope="singleton">
-    <constructor-arg ref="hikariConfig"/>      
+    <constructor-arg ref="hikariConfig"/>
   </bean>
   
-  <!-- mybatis bean -->
-  <!-- servlet              spring -->
-  <!-- Session              SessionTemplet -->
-  <!-- SessionFactory       SessionFactory -->
-  
-  <!-- SqlSessionFactory bean -->
   <bean class="org.mybatis.spring.SqlSessionFactoryBean"
         id="sqlSessionFactoryBean"
         scope="singleton">
     <property name="dataSource" ref="hikariDataSource"/>
-    <property name="configLocation" value="com/gdu/prj05/mybatis/config/mybatis-config.xml"/>
-    <property name="mapperLocations" value="com/gdu/prj05/mapper/*.xml"/> <!-- *.xml : 모든 xml (mapper 가 여러개여도 적용됨) -->
+    <property name="configLocation"  value="classpath:com/gdu/prj05/mybatis/config/mybatis-config.xml"/>
+    <property name="mapperLocations" value="classpath:com/gdu/prj05/mybatis/mapper/*.xml"/>
   </bean>
   
-  <!-- SqlSession bean -->
   <bean class="org.mybatis.spring.SqlSessionTemplate"
         id="sqlSessionTemplate"
         scope="singleton">
     <constructor-arg ref="sqlSessionFactoryBean"/>
+  </bean>
+  
+  <bean class="com.gdu.prj05.dao.ContactDaoImpl"
+        id="contactDao"
+        scope="singleton">
+    <constructor-arg ref="sqlSessionTemplate"/>
   </bean>
   
 </beans>
