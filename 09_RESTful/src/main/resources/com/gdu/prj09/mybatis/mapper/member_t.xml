@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.gdu.prj09.mybatis.mapper.member_t"> <!-- 확장자명 빼고 .으로 분리 -->
+
+  <!-- mybatis 에서는 AddressDto 를 직접 사용하지 못하므로 Map 을 따로 만들어줘야 한다. -->
+
+  <insert id="insertMember"
+          parameterType="MemberDto">
+    <selectKey keyProperty="memberNo" order="BEFORE" resultType="int">
+      SELECT MEMBER_SEQ.NEXTVAL
+        FROM DUAL
+    </selectKey>
+    INSERT INTO MEMBER_T (
+        MEMBER_NO
+      , EMAIL
+      , NAME
+      , GENDER
+    ) VALUES (
+        #{memberNo}
+      , #{email}
+      , #{name}
+      , #{gender}
+    ) 
+  </insert>
+  
+  <!-- #{} = setter 로 동작하는 애들임 -->
+  <insert id="insertAddress"
+          parameterType="AddressDto">
+
+    INSERT INTO ADDRESS_T (
+        ADDRESS_NO
+      , ZONECODE
+      , ADDRESS
+      , DETAIL_ADDRESS
+      , EXTRA_ADDRESS
+      , MEMBER_NO
+    ) VALUES (
+        ADDRESS_SEQ.NEXTVAL
+      , #{zonecode}
+      , #{address}
+      , #{detailAddress}
+      , #{extraAddress}
+      , #{member.memberNo}
+    )
+  </insert>
+
+</mapper>

@@ -35,14 +35,13 @@
       2) resultType="int"
       3) resultType="double"
   -->
-
-  <insert id="insertHistory"
-          parameterType="HistoryDto">
     <!-- HistoryDto의 historyNo에 HISTORY_SEQ값을 빼내서 저장하는 것을 order="BEFORE" insert 전에 먼저 해라 
          즉, 시퀀스 값을 먼저 HISTORY_NO 에 저장한다.
     -->
     <!-- INSERT 문에서 #{historyNo} 는 selectKey 에서 저장한 값을 주는 것을 의미함 -->
-    <selectKey keyProperty="historyNo" resultType="int" order="BEFORE">
+  <insert id="insertHistory"
+          parameterType="HistoryDto">
+    <selectKey keyProperty="historyNo" resultType="java.lang.Integer" order="BEFORE">
       SELECT HISTORY_SEQ.NEXTVAL
         FROM DUAL
     </selectKey>

@@ -77,7 +77,7 @@ public class UploadServiceImpl implements UploadService {
                               .uploadPath(uploadPath)
                               .originalFilename(originalFileName)
                               .filesystemName(filesystemName)
-                              .historyNo(history.getHistroyNo())
+                              .historyNo(history.getHistoryNo())
                             .build();
         
         // FileDto -> FILE_T
