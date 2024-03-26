@@ -96,6 +96,14 @@
     <hr>
     
     <div>
+      <div id="total"></div>
+      <div>
+        <select id="display">
+          <option>20</option>
+          <option>50</option>
+          <option>100</option>
+        </select>
+      </div>
       <table border="1">
         <thead>
           <tr>
@@ -113,70 +121,58 @@
           </tr>
         </tfoot>
       </table>
+      <button type="button" id="btn-select-remove">선택삭제</button>
     </div>
   
   </div>
   
+  <script src="${contextPath}/resources/js/member.js"></script>
   <script>
+  
+//jQuery 객체 선언
+ 
+// 함수 표현식(함수만들기)
+const fnGetMemberByNo = (evt)=>{
+  $.ajax({
+    type: 'GET',
+    url: getContextPath() + '/members/' + evt.target.dataset.memberNo,
+    dataType: 'json'
+  }).done(resData=>{  /* resData = {
+                           "addressList": [
+                              {
+                            	  "addressNo": 1,
+                            	  "zonecode": "12345",
+                            	  "address": "서울시 구로구 디지털로"
+                            	  "detailAddress": "카카오",
+                            	  "extraAddress": "(가산동)"
+                              },
+                              ...
+                           ],
+                           "member": {
+                             "memberNo": 1,
+                             "email": "email@email",
+                             "name": "gildong",
+                             "gender": "man"
+                           }
+                         }
     
-    // jQuery 객체 선언
-    var email = $('#email');
-    var mName = $('#name');
-    var gender = $(':radio[name=gender]');  // :radio[name=gender] = input[type=radio][name=gender]
-    var zonecode = $('#zonecode');
-    var address = $('#address');
-    var detailAddress = $('#detailAddress');
-    var extraAddress = $('#extraAddress');
-    
-    var btnInit=$('#btn-init');
-    var btnRegister=$('#btn-register');
-    var btnModify=$('#btn-modify');
-    var btnRemove=$('#btn-remove');
-    
-    // 함수 표현식(함수만들기)
-    const fnInit = ()=>{
-      email.val('');
-      mName.val('');
-      $('#none').prop('checked', true);
-      // $('#none').attr('checked', 'checked');	// <input checked="checked">
-      zonecode.val('');
-      address.val('');
-      detailAddress.val('');
-      extraAddress.val('');
-    }
-    
-    const fnRegisterMember = ()=>{
-    	$.ajax({
-    		// 요청
-    		type: 'POST',												// POST 방식이므로 요청 본문(RequestBody)에 실어서 보낸다.
-    		url: '${contextPath}/members',
-    		contentType: 'application/json',		// java로 보내는 데이터의 타입
-    		data: JSON.stringify({							// java로 보내는 데이터 (문자열 형식의 JSON 데이터)
-    			'email': email.val(),
-    			'name': mName.val(),
-    			'gender': $(':radio:checked').val(),
-    			'zonecode': zonecode.val(),
-    			'address': address.val(),
-    			'detailAddress': detailAddress.val(),
-    			'extraAddress': extraAddress.val()
-    		}),			// JSON.stringify (String으로 작성된 것을 json 으로 변환하는 객체와 함수)
-    		// 응답
-    		dataType: 'json',										// 받아오는 데이터 타입
-    	}).done(resData=>{										// resData = {"insertCount" : 2}
-    		if(resData.insertCount === 2){
-    			alert('정상적으로 등록되었습니다.');
-    			fnInit();
-    		}
-    	}).fail(jqXHR=>{											// jqXHR = 예외 발생시 예외가 저장되는 객체 이름
-    		alert(jqXHR.responseText);
-    	})
-    }
-    
-    // 함수 호출 및 이벤트
-    fnInit();
-    btnInit.on('click', fnInit);
-    btnRegister.on('click', fnRegisterMember);
-    
+                      */
+    jqEmail.val(resData.member.email);
+    jqName.val(resData.member.name);
+    // radio 중에서 value 가 woman 이나 man 인것 중 checked 를 true 바꿔
+    $(':radio[value=' + resData.member.gender + ']').prop('checked', true);
+    jqZonecode.val(resData.addressList[0].zonecode);
+    jqAddress.val(resData.addressList[0].address);
+    jqDetailAddress.val(resData.addressList[0].detailAddress);
+    jqExtraAddress.val(resData.addressList[0].extraAddress);
+  }).fail(jqXHR=>{
+    alert(jqXHR.statusText + '(' + jqXHR.status + ')');
+  })
+}
+
+
+// 함수 호출 및 이벤트
+$(document).on('click', '.btn-detail', (evt)=>{ fnGetMemberByNo(evt); });
   
   </script>
 </body>

@@ -1,6 +1,7 @@
 package com.gdu.prj09.service;
 
 import java.io.PrintWriter;
+import java.util.List;
 import java.util.Map;
 
 import javax.servlet.http.HttpServletResponse;
@@ -25,13 +26,38 @@ public class MemberServiceImpl implements MemberService {
   @Override
   public ResponseEntity<Map<String, Object>> getMembers(int page, int display) {
     
-    return null;
+    int total = memberDao.getTotalMemeberCount();
+    myPageUtils.setPaging(total, display, page);
+    
+    Map<String, Object> params = Map.of("begin", myPageUtils.getBegin(), "end", myPageUtils.getEnd());
+    List<AddressDto> members = memberDao.getMemberList(params);
+    
+    return new ResponseEntity<Map<String,Object>>(Map.of("members", members
+                                                       , "total", total
+                                                       , "paging", myPageUtils.getAsyncPaging())
+                                                  , HttpStatus.OK );
   }
 
   @Override
-  public ResponseEntity<MemberDto> getMemberByNo(int memberNo) {
+  public ResponseEntity<Map<String, Object>> getMemberByNo(int memberNo) {
     
-    return null;
+    int total = memberDao.getTotalAddressCountByNo(memberNo);
+    int page = 1;
+    int display = 20;
+    
+    myPageUtils.setPaging(total, display, page);
+    
+    Map<String, Object> params = Map.of("memberNo", memberNo
+                                      , "begin", myPageUtils.getBegin()
+                                      , "end", myPageUtils.getEnd());
+    
+    // 주소와 멤버 정보
+    List<AddressDto> addressList = memberDao.getAddressListByNo(params);
+    MemberDto member = memberDao.getMemberByNo(memberNo);
+    
+    return new ResponseEntity<Map<String,Object>>(Map.of("addressList", addressList
+                                                       , "member", member)
+                                                , HttpStatus.OK);
   }
 
   @Override

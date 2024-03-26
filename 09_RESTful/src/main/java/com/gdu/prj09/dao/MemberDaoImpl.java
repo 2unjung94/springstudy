@@ -47,20 +47,27 @@ public class MemberDaoImpl implements MemberDao {
 
   @Override
   public int getTotalMemeberCount() {
-    
-    return 0;
+    return sqlSessionTemplate.selectOne(NS + "getTotalMemeberCount");
   }
 
   @Override
-  public List<MemberDto> getMemberList(Map<String, Object> map) {
-    
-    return null;
+  public List<AddressDto> getMemberList(Map<String, Object> map) {
+    return sqlSessionTemplate.selectList(NS + "getMemberList", map);
   }
 
   @Override
   public MemberDto getMemberByNo(int memberNo) {
-    
-    return null;
+    return sqlSessionTemplate.selectOne(NS + "getMemberByNo", memberNo);
+  }
+  
+  @Override
+  public int getTotalAddressCountByNo(int memberNo) {
+    return sqlSessionTemplate.selectOne(NS + "getTotalAddressCountByNo", memberNo);
+  }
+  
+  @Override
+  public List<AddressDto> getAddressListByNo(Map<String, Object> map) {  
+    return sqlSessionTemplate.selectList(NS + "getAddressListByNo", map);
   }
 
 }

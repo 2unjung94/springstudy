@@ -25,7 +25,7 @@ public interface MemberService {
   ResponseEntity<Map<String, Object>> getMembers(int page, int display);  // display, page 두가지를 매개변수로 가짐
   
   // 상세조회: /members/1
-  ResponseEntity<MemberDto> getMemberByNo(int memberNo); 
+  ResponseEntity<Map<String, Object>> getMemberByNo(int memberNo); 
   
   // 등록: 이번에는 unique 처리 안함(1. 정상 처리 2. Exception 처리(중복시 catch block 에서 응답))
   ResponseEntity<Map<String, Object>> registerMember(Map<String, Object> map, HttpServletResponse response); // map을 전달해야 jackson이 json 데이터를 만들어준다.

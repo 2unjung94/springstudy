@@ -4,6 +4,22 @@
   "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.gdu.prj09.mybatis.mapper.member_t"> <!-- 확장자명 빼고 .으로 분리 -->
 
+  <!-- SELECT 결과를 AddressDto 와 연결해주기 위한 설명서 작성 -->
+  <!-- id 기본키, result 일반컬럼, dto association -->
+  <resultMap type="AddressDto" id="AddressMap">
+    <id     column="ADDRESS_NO"       property="addressNo"/>
+    <result column="ZONECODE"         property="zonecode"/>
+    <result column="ADDRESS"          property="address"/>
+    <result column="DETAIL_ADDRESS"   property="detailAddress"/>
+    <result column="EXTRA_ADDRESS"    property="extraAddress"/>
+    <association javaType="MemberDto" property="member">
+      <id     column="MEMBER_NO"  property="memberNo"/>
+      <result column="EMAIL"  property="email"/>
+      <result column="NAME"   property="name"/>
+      <result column="GENDER" property="gender"/>
+    </association>
+  </resultMap>
+
   <!-- mybatis 에서는 AddressDto 를 직접 사용하지 못하므로 Map 을 따로 만들어줘야 한다. -->
 
   <insert id="insertMember"
@@ -46,4 +62,60 @@
     )
   </insert>
 
+  <select id="getTotalMemeberCount"
+          resultType="int">
+    SELECT COUNT(*)
+      FROM MEMBER_T
+  </select>
+  
+  <!-- INNER JOIN 할 때 기본키를 가진 테이블이 DRIVER TABLE, 외래키를 가진 테이블이 DRIVEN TABLE, 
+       DRIVER TABLE 먼저 작성할 것 
+       왼쪽(PK 또는 UNIQUE인 칼럼) = 오른쪽(값) -->
+  <!-- RN : 페이징 처리를 위해 해당 행값이 begin 과 end 사이에 있어야 함을 계산하기 위해 -->
+  <!-- 양쪽 테이블에 모두 존재하는 컬럼은 오너를 반드시 명시해줘야 한다. -->
+  <!-- 조건절은 서브쿼리에서 가능하면 서브쿼리에서 작성하는게 좋다. -->
+  <!-- 반환 타입인 MemberDto 에는 RN 이 존재하지 않으므로 RN 을 조회할 필요가 없다.
+       즉, 반환 타입(resultType)과 SELECT 쿼리에서 찾는 컬럼과 1:1로 맞춰야 한다.
+   -->
+   <!-- AddressDto 로 바로 저장되면 좋지만, 동작하지 않으므로 직접 지정해줘야 한다. -->
+  <select id="getMemberList"
+          parameterType="Map"
+          resultMap="AddressMap">
+    SELECT MEMBER_NO, EMAIL, NAME, GENDER, ADDRESS_NO, ZONECODE, ADDRESS, DETAIL_ADDRESS, EXTRA_ADDRESS
+      FROM (SELECT ROW_NUMBER() OVER(ORDER BY M.MEMBER_NO DESC) AS RN
+                 , M.MEMBER_NO, M.EMAIL, M.NAME, M.GENDER
+                 , A.ADDRESS_NO, A.ZONECODE, A.ADDRESS, A.DETAIL_ADDRESS, A.EXTRA_ADDRESS
+             FROM MEMBER_T M LEFT JOIN ADDRESS_T A
+               ON M.MEMBER_NO = A.MEMBER_NO)
+     WHERE RN BETWEEN #{begin} AND #{end}
+  </select>
+
+  <!-- 멤버 상세 주소  -->
+  <!-- 파라미터가 여러개일 때 파라미터 타입 생략하고 #{param1}, #{param2}, ... 사용 -->
+  <select id="getMemberByNo"
+          resultType="MemberDto">
+    SELECT MEMBER_NO, EMAIL, NAME, GENDER
+      FROM MEMBER_T
+     WHERE MEMBER_NO = #{memberNo}
+  </select>
+  
+  <select id="getTotalAddressCountByNo"
+          resultType="int">
+    SELECT COUNT(*)
+      FROM ADDRESS_T
+     WHERE MEMBER_NO = #{memberNo}
+  </select>
+  
+  <!-- 댓글 목록이라 생각하고 페이징 처리해야 함  -->
+  <!-- ADDRESS_T 에서 MEMBER_NO 는 외래키 이므로 여러 행을 가질 수 있다. -->
+  <select id="getAddressListByNo"
+          parameterType="Map"
+          resultType="AddressDto">
+    SELECT ADDRESS_NO, ZONECODE, ADDRESS, DETAIL_ADDRESS, EXTRA_ADDRESS
+      FROM (SELECT ROW_NUMBER() OVER(ORDER BY ADDRESS_NO DESC) AS RN, ADDRESS_NO, ZONECODE, ADDRESS, DETAIL_ADDRESS, EXTRA_ADDRESS
+              FROM ADDRESS_T
+             WHERE MEMBER_NO = #{memberNo})
+     WHERE RN BETWEEN #{begin} AND #{end}
+  </select>
+  
 </mapper>
