@@ -13,6 +13,7 @@
 
   <div>
     <h1>회원관리</h1>
+    <input type="hidden" id="member-no">
     <div>
       <label for="email">이메일</label>
       <input type="text" id="email">
@@ -30,7 +31,7 @@
       <input type="radio" name="gender" id="woman" value="woman">
     </div>
     <div>
-      <input type="text" id="zonecode" placeholder="우편번호">
+      <input type="text" id="zonecode" onclick="execDaumPostcode()" placeholder="우편번호" readonly>
       <input type="button" onclick="execDaumPostcode()" value="우편번호 찾기"><br>
       <input type="text" id="address" placeholder="주소"><br>
       <input type="text" id="detailAddress" placeholder="상세주소">
@@ -98,6 +99,7 @@
     <div>
       <div id="total"></div>
       <div>
+        <button type="button" id="btn-select-remove">선택삭제</button>
         <select id="display">
           <option>20</option>
           <option>50</option>
@@ -121,59 +123,10 @@
           </tr>
         </tfoot>
       </table>
-      <button type="button" id="btn-select-remove">선택삭제</button>
     </div>
   
   </div>
   
   <script src="${contextPath}/resources/js/member.js"></script>
-  <script>
-  
-//jQuery 객체 선언
- 
-// 함수 표현식(함수만들기)
-const fnGetMemberByNo = (evt)=>{
-  $.ajax({
-    type: 'GET',
-    url: getContextPath() + '/members/' + evt.target.dataset.memberNo,
-    dataType: 'json'
-  }).done(resData=>{  /* resData = {
-                           "addressList": [
-                              {
-                            	  "addressNo": 1,
-                            	  "zonecode": "12345",
-                            	  "address": "서울시 구로구 디지털로"
-                            	  "detailAddress": "카카오",
-                            	  "extraAddress": "(가산동)"
-                              },
-                              ...
-                           ],
-                           "member": {
-                             "memberNo": 1,
-                             "email": "email@email",
-                             "name": "gildong",
-                             "gender": "man"
-                           }
-                         }
-    
-                      */
-    jqEmail.val(resData.member.email);
-    jqName.val(resData.member.name);
-    // radio 중에서 value 가 woman 이나 man 인것 중 checked 를 true 바꿔
-    $(':radio[value=' + resData.member.gender + ']').prop('checked', true);
-    jqZonecode.val(resData.addressList[0].zonecode);
-    jqAddress.val(resData.addressList[0].address);
-    jqDetailAddress.val(resData.addressList[0].detailAddress);
-    jqExtraAddress.val(resData.addressList[0].extraAddress);
-  }).fail(jqXHR=>{
-    alert(jqXHR.statusText + '(' + jqXHR.status + ')');
-  })
-}
-
-
-// 함수 호출 및 이벤트
-$(document).on('click', '.btn-detail', (evt)=>{ fnGetMemberByNo(evt); });
-  
-  </script>
 </body>
 </html>

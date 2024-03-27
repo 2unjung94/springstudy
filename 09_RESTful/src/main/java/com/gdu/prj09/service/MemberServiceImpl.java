@@ -1,6 +1,7 @@
 package com.gdu.prj09.service;
 
 import java.io.PrintWriter;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 
@@ -107,21 +108,45 @@ public class MemberServiceImpl implements MemberService {
   }
 
   @Override
-  public ResponseEntity<Map<String, Object>> modifyMember(MemberDto member) {
+  public ResponseEntity<Map<String, Object>> modifyMember(Map<String, Object> map) {
     
-    return null;
+    int updateMemberCount = memberDao.updateMember(map);
+    int updateAddressCount = memberDao.updateAddress(map);
+   
+    // address 가 없을 때 insert 처리
+    if(updateAddressCount == 0) {
+            
+      AddressDto address = AddressDto.builder()
+          .zonecode((String)map.get("zonecode"))
+          .address((String)map.get("address"))
+          .detailAddress((String)map.get("detailAddress"))
+          .extraAddress((String)map.get("extraAddress"))
+          .member(MemberDto.builder()
+                    .memberNo(Integer.parseInt((String)map.get("memberNo"))).build())
+          .build();
+      
+      updateAddressCount = memberDao.insertAddress(address);
+
+    }
+    
+    // 넘어갈 때 jackson 이 json 데이터로 만들어 줌
+    return new ResponseEntity<Map<String,Object>>(Map.of("updateCount", updateAddressCount + updateMemberCount)
+                                                , HttpStatus.OK);
+    
   }
 
   @Override
   public ResponseEntity<Map<String, Object>> removeMember(int memberNo) {
     
-    return null;
+    return new ResponseEntity<Map<String,Object>>(Map.of("deleteCount", memberDao.deleteMember(memberNo))
+                                                , HttpStatus.OK);
   }
 
   @Override
   public ResponseEntity<Map<String, Object>> removeMembers(String memberNoList) {
-    
-    return null;
+    // , 로 분리된 배열을 List 로 변환
+    return new ResponseEntity<Map<String,Object>>(Map.of("deleteCount", memberDao.deleteMembers(Arrays.asList(memberNoList.split(","))))
+                                                , HttpStatus.OK);
   }
 
 }

@@ -31,7 +31,7 @@ public interface MemberService {
   ResponseEntity<Map<String, Object>> registerMember(Map<String, Object> map, HttpServletResponse response); // map을 전달해야 jackson이 json 데이터를 만들어준다.
   
   // 수정
-  ResponseEntity<Map<String, Object>> modifyMember(MemberDto member);   // 이메일은 수정하지 않을 거라서 response(중복처리) 필요 없다.
+  ResponseEntity<Map<String, Object>> modifyMember(Map<String, Object> map);   // 이메일은 수정하지 않을 거라서 response(중복처리) 필요 없다.
   
   // 삭제: /members/1 (상세조회와 같은 주소를 사용하지만 method를 사용해서 요청을 구분한다)
   ResponseEntity<Map<String, Object>> removeMember(int memberNo);

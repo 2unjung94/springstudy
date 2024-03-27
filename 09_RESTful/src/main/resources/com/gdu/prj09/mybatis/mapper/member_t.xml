@@ -62,6 +62,41 @@
     )
   </insert>
 
+  <update id="updateMember"
+          parameterType="Map">
+    UPDATE MEMBER_T
+       SET NAME = #{name}
+         , GENDER = #{gender}
+     WHERE MEMBER_NO = #{memberNo}
+  </update>
+  
+  <!-- 1 : M 관계일 경우 WHERE 절이 ADDRESS_NO로 바뀌어야 한다 현재는 1:1 관계 이므로 MEMBER_NO 로 조건 -->
+  <update id="updateAddress"
+          parameterType="Map">
+    UPDATE ADDRESS_T
+       SET ZONECODE = #{zonecode}
+         , ADDRESS = #{address}
+         , DETAIL_ADDRESS = #{detailAddress}
+         , EXTRA_ADDRESS = #{extraAddress}
+     WHERE MEMBER_NO = #{memberNo}
+  </update>
+  
+  <delete id="deleteMember">
+    DELETE
+      FROM MEMBER_T
+     WHERE MEMBER_NO = #{memberNo}
+  </delete>
+  
+  <!-- tag 로 IN(1,2,3) 만들기 - foreach -->
+  <delete id="deleteMembers">
+    DELETE
+      FROM MEMBER_T
+     WHERE MEMBER_NO 
+     <foreach collection="list" item="memberNo" open="IN(" separator="," close=")">
+       #{memberNo}
+     </foreach>
+  </delete>
+
   <select id="getTotalMemeberCount"
           resultType="int">
     SELECT COUNT(*)
