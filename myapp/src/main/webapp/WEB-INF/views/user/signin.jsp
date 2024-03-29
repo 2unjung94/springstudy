@@ -21,12 +21,25 @@
 </head>
 <body>
 
-  <c:if test="${sessionScope.user == null}">
-    <a href="${contextPath}/user/signin.page">Sign In</a>
-  </c:if>
-  <c:if test="${sessionScope.user != null} ">
-    ${sessionScope.user.name}님 반갑습니다
-  </c:if>
+  <h1>Sign In</h1>
+  
+  <div>
+    <form method="POST"
+          action="${contextPath}/user/signin.do">
+      <div>
+        <label for="email">아이디</label>
+        <input type="text" id="email" name="email" placeholder="ABC@naver.com">
+      </div>
+      <div>
+        <label for="pw">비밀번호</label>
+        <input type="password" id="pw" name="pw" placeholder="●●●●">
+      </div>
+      <div>
+        <input type="hidden" name="url" value="${url}">
+        <button type="submit">Sign In</button>
+      </div>
+    </form>
+  </div>
     
 </body>
 </html>
