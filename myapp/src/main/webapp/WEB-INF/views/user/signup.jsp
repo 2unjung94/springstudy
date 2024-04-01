@@ -20,7 +20,7 @@
 
 <style>
   @import url('https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css');
-  @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@100..900&display=swap');
+  @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@100..900&display=swap')
   * {
     font-family: "Noto Sans KR", sans-serif;
     font-weight: 400;
@@ -35,31 +35,30 @@
   <form method="POST"
         action="${contextPath}/user/signup.do"
         id="frm-signup">
-    
-    <!-- 부트스트랩 - 클래스 속성 사용하면 된다
-    mb-3 : 아래에 margin 을 3 준다 -->
+  
     <div class="mb-3">
-      <label for="email">아이디</label>
-      <input type="text" id="email" name="email" placeholder="example@example.com">
+      <label for="inp-email">아이디</label>
+      <input type="text" id="inp-email" name="email" placeholder="example@example.com">
       <button type="button" id="btn-code" class="btn btn-primary">인증코드받기</button>
       <div id="msg-email"></div>
     </div>
     <div class="mb-3">
-      <input type="text" id="code" placeholder="인증코드입력" disabled>
+      <input type="text" id="inp-code" placeholder="인증코드입력" disabled>
       <button type="button" id="btn-verify-code" class="btn btn-primary">인증하기</button>
     </div>
   
   </form>
-  
+
 <script>
 
 const fnGetContextPath = ()=>{
- const host = location.host;  /* localhost:8080 */
- const url = location.href;   /* http://localhost:8080/mvc/getDate.do */
- const begin = url.indexOf(host) +length;
- const end = url.indexOf('/', begin + 1);
- return url.substring(begin, end);
+  const host = location.host;  /* localhost:8080 */
+  const url = location.href;   /* http://localhost:8080/mvc/getDate.do */
+  const begin = url.indexOf(host) + host.length;
+  const end = url.indexOf('/', begin + 1);
+  return url.substring(begin, end);
 }
+
 
 const fnCheckEmail = ()=>{
 	
@@ -106,48 +105,57 @@ const fnCheckEmail = ()=>{
 	 })
 	*/
 	
-  let email = document.getElementById('email');
+  let inpEmail = document.getElementById('inp-email');
   let regEmail = /^[A-Za-z0-9-_]{2,}@[A-Za-z0-9]+(\.[A-Za-z]{2,6}){1,2}$/;
-  if(!regEmail.test(email.value)){
+  if(!regEmail.test(inpEmail.value)){
     alert('이메일 형식이 올바르지 않습니다.');
     return;
   }
   // ajax : 페이지는 유지하되 DB 를 사용해야 할 때 (POST 방식으로 JSON 형태로 보낸다. 받는 쪽에선 @RequestBody와 map으로 받을 것)
   // fetch(주소, {옵션});
-  fetch(fnGetContextPath() + '/user/checkEmail.do',{
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json'
-    },
-    body: JSON.stringify({
-      'email': email.value
-    })
-  })
-  .then(response => response.json())// .then( (response)=>{return response.json()}; )
-  .then(resData => {
-	  // 비동기작업이 순차적으로 진행될 때 promise 필요하므로 ajax 을 사용하면 다시 promise를 사용해야 한다.
-	  
-	  // 중복 통과 지점
-	  if(resData.enableEmail){
-		  // 인증코드 이메일 보내기
-		  fetch(fnGetContextPath() + '/user/sendCode.do',{
-			  method: 'POST',
-			  headers: {
-			    'Content-Type': 'application/json'
-			  },
-			  body: JSON.stringify({
-			    'email': email.value
+  fetch(fnGetContextPath() + '/user/checkEmail.do', {
+	    method: 'POST',
+	    headers: {
+	      'Content-Type': 'application/json'
+	    },
+	    body: JSON.stringify({
+	      'email': inpEmail.value
+	    })
+	  })
+	  .then(response => response.json())  // .then( (response) => { return response.json(); } )
+	  .then(resData => {
+		  if(resData.enableEmail){
+			  fetch(fnGetContextPath() + '/user/sendCode.do', {
+				  method: 'POST',
+				  headers: {
+				    'Content-Type': 'application/json'
+				  },
+				  body: JSON.stringify({
+				    'email': inpEmail.value
+				  })
 			  })
-		  });
-	  } else {
-		  // 같은 이메일이 있을 때
-		  document.getElementById('msg-email').innerHTML = '이미 사용 중인 이메일입니다.';
-		  return;
-	  }
-  })
-}
+			  .then(response => response.json())
+			  .then(resData => {  // resData = {"code": "123qaz"}
+				  let inpCode = document.getElementById('inp-code');
+			    let btnVerifyCode = document.getElementById('btn-verify-code');
+			    alert(inpEmail.value + '로 인증코드를 전송했습니다.');
+			    inpCode.disabled = false;
+			    btnVerifyCode.addEventListener('click', (evt) => {
+			    	if(resData.code === inpCode.value) {
+			    		alert('인증되었습니다.');
+			    	} else {
+			    		alert('인증되지 않았습니다.');
+			    	}
+			    })
+			  })
+		  } else {
+			  document.getElementById('msg-email').innerHTML = '이미 사용 중인 이메일입니다.';
+			  return;
+		  }
+	  })
+	}
 
-document.getElementById('btn-code').addEventListener('click',fnCheckEmail);
+	document.getElementById('btn-code').addEventListener('click', fnCheckEmail);
 
   
 </script>

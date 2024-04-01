@@ -13,10 +13,12 @@ import javax.mail.internet.MimeMessage;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.PropertySource;
 import org.springframework.core.env.Environment;
+import org.springframework.stereotype.Component;
 
 // properties 파일 읽어들이는 방법
 // classpath : src/main/resources 까지를 의미함
 @PropertySource(value = "classpath:email.properties")
+@Component
 public class MyJavaMailUtils {
   
   @Autowired
