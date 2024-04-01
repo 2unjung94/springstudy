@@ -10,8 +10,17 @@ import javax.mail.Transport;
 import javax.mail.internet.InternetAddress;
 import javax.mail.internet.MimeMessage;
 
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.PropertySource;
+import org.springframework.core.env.Environment;
 
+// properties 파일 읽어들이는 방법
+// classpath : src/main/resources 까지를 의미함
+@PropertySource(value = "classpath:email.properties")
 public class MyJavaMailUtils {
+  
+  @Autowired
+  private Environment env;
   
   public void sendMail(String to, String subject, String content) {
     
@@ -26,7 +35,8 @@ public class MyJavaMailUtils {
     Session session = Session.getInstance(props, new Authenticator() {
       @Override
       protected PasswordAuthentication getPasswordAuthentication() {
-        return new PasswordAuthentication("gmail", "password");
+        return new PasswordAuthentication(env.getProperty("spring.mail.username")
+                                        , env.getProperty("spring.mail.password"));
       }
     });
     
@@ -34,7 +44,7 @@ public class MyJavaMailUtils {
       
       // 메일 만들기 (보내는 사람 + 받는 사람 + 제목 + 내용)
       MimeMessage mimeMessage = new MimeMessage(session);
-      mimeMessage.setFrom(new InternetAddress("gmail", "myapp"));
+      mimeMessage.setFrom(new InternetAddress(env.getProperty("spring.mail.username"), "myapp"));
       mimeMessage.setRecipient(Message.RecipientType.TO, new InternetAddress(to));
       mimeMessage.setSubject(subject);
       mimeMessage.setContent(content, "text/html; charset=UTF-8");
