@@ -19,13 +19,7 @@
       <if test="pw!=null">AND PW = #{pw}</if>
     </where>
   </select>
-  
-  <insert id="insertUser"
-          parameterType="UserDto">
-    INSERT INTO USER_T
-    VALUES (1, 'ABC@EMAIL.COM', '1111', 'ABC', 'MAN', '01011111111', 0, 0, CURRENT_DATE, CURRENT_DATE)        
-  </insert>
-  
+ 
   <insert id="insertAccessHistory"
           parameterType="Map">
     INSERT INTO ACCESS_HISTORY_T(
@@ -40,6 +34,24 @@
       , #{ip}
       , CURRENT_DATE
       , NULL)   
+  </insert>
+  
+  <select id="getLeaveUserByMap"
+          parameterType="Map"
+          resultType="LeaveUserDto">
+    SELECT LEAVE_USER_NO
+      FROM LEAVE_USER_T
+    <where>
+      <if test="email!=null">EMAIL = #{email}</if>
+      <if test="pw!=null">AND PW = #{pw}</if>
+    </where>
+  </select>
+  
+    
+  <insert id="insertUser"
+          parameterType="UserDto">
+    INSERT INTO USER_T
+    VALUES (1, 'ABC@EMAIL.COM', '1111', 'ABC', 'MAN', '01011111111', 0, 0, CURRENT_DATE, CURRENT_DATE)        
   </insert>
 
 </mapper>

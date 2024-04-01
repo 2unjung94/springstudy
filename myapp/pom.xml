@@ -20,7 +20,13 @@
   
   <dependencies>
   
-  
+    <!-- https://mvnrepository.com/artifact/com.sun.mail/javax.mail -->
+    <dependency>
+      <groupId>com.sun.mail</groupId>
+      <artifactId>javax.mail</artifactId>
+      <version>1.6.2</version>
+    </dependency>
+
   
     <!-- Java JSON Library -->
     <!-- https://mvnrepository.com/artifact/com.fasterxml.jackson.core/jackson-databind -->
@@ -29,9 +35,7 @@
       <artifactId>jackson-databind</artifactId>
       <version>2.16.1</version>
     </dependency>
-
-
-    
+     
     <!-- Log 를 남기는 로그 프레임워크 (Log4j 보다 향상된 기능) -->
     <!-- https://mvnrepository.com/artifact/ch.qos.logback/logback-classic -->
     <dependency>

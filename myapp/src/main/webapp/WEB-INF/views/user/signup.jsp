@@ -1,0 +1,156 @@
+<%@ page language="java" contentType="text/html; charset=UTF-8"
+    pageEncoding="UTF-8"%>
+<%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
+<c:set var="contextPath" value="${pageContext.request.contextPath}"/>
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>Insert title here</title>
+
+<!-- include libraries(jquery, bootstrap) -->
+<script src="https://code.jquery.com/jquery-3.7.1.min.js" integrity="sha256-/JqT3SQfawRcv/BIHPThkBvs0OEvtFFmqPF/lYI/Cxo=" crossorigin="anonymous"></script>
+<link href="https://stackpath.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css" rel="stylesheet">
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/3.4.1/js/bootstrap.min.js"></script>
+
+<!-- include summernote css/js -->
+<link rel="stylesheet" href="${contextPath}/resources/summernote-0.8.18-dist/summernote.min.css">
+<script src="${contextPath}/resources/summernote-0.8.18-dist/summernote.min.js"></script>
+<script src="${contextPath}/resources/summernote-0.8.18-dist/lang/summernote-ko-KR.min.js"></script>
+
+<style>
+  @import url('https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css');
+  @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@100..900&display=swap');
+  * {
+    font-family: "Noto Sans KR", sans-serif;
+    font-weight: 400;
+  }
+</style>
+
+</head>
+<body>
+
+  <h1>Sign Up</h1>
+  
+  <form method="POST"
+        action="${contextPath}/user/signup.do"
+        id="frm-signup">
+    
+    <!-- 부트스트랩 - 클래스 속성 사용하면 된다
+    mb-3 : 아래에 margin 을 3 준다 -->
+    <div class="mb-3">
+      <label for="email">아이디</label>
+      <input type="text" id="email" name="email" placeholder="example@example.com">
+      <button type="button" id="btn-code" class="btn btn-primary">인증코드받기</button>
+      <div id="msg-email"></div>
+    </div>
+    <div class="mb-3">
+      <input type="text" id="code" placeholder="인증코드입력" disabled>
+      <button type="button" id="btn-verify-code" class="btn btn-primary">인증하기</button>
+    </div>
+  
+  </form>
+  
+<script>
+
+const fnGetContextPath = ()=>{
+ const host = location.host;  /* localhost:8080 */
+ const url = location.href;   /* http://localhost:8080/mvc/getDate.do */
+ const begin = url.indexOf(host) +length;
+ const end = url.indexOf('/', begin + 1);
+ return url.substring(begin, end);
+}
+
+const fnCheckEmail = ()=>{
+	
+	/* 
+	 <$.ajax 버전 - ajax 후 ajax 이 동작할 때 promise 가 필요>
+	 new Promise((resolve, reject=>{
+		 $.ajax({
+			 url: '이메일중복체크요청'
+		 })
+		 .done(resData =>{
+			 if(resData.enableEmail){
+				 resolve();		// then() 메소드 호출
+			 } else{
+				 reject();
+			 }
+	 })
+	 .then(()=>{
+		  $.ajax({
+			  url:'인증코드전송요청'
+		  })
+		  .done(resData=>{
+			  if(resData.code === 인증코드입력값)
+		  })
+	 	 }
+	 })
+	 .catch(()=>{
+		 실패처리
+	 })
+	})
+	*/
+	
+	/*
+	 -----------------------------------
+	 fetch('이메일중복체크요청', {})
+	 .then(response=>response.json())
+	 .then(resData=>{
+	    if(resData.enableEmail){
+	 	   fetch('인증코드전송요청', {})
+	 	   .then(response=>response.json())
+	 	   .then(resData=>{  // {"code": "123asd"}
+	 		   if(resData.code === 인증코드입력값)
+	 	   })
+	   }
+	 })
+	*/
+	
+  let email = document.getElementById('email');
+  let regEmail = /^[A-Za-z0-9-_]{2,}@[A-Za-z0-9]+(\.[A-Za-z]{2,6}){1,2}$/;
+  if(!regEmail.test(email.value)){
+    alert('이메일 형식이 올바르지 않습니다.');
+    return;
+  }
+  // ajax : 페이지는 유지하되 DB 를 사용해야 할 때 (POST 방식으로 JSON 형태로 보낸다. 받는 쪽에선 @RequestBody와 map으로 받을 것)
+  // fetch(주소, {옵션});
+  fetch(fnGetContextPath() + '/user/checkEmail.do',{
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json'
+    },
+    body: JSON.stringify({
+      'email': email.value
+    })
+  })
+  .then(response => response.json())// .then( (response)=>{return response.json()}; )
+  .then(resData => {
+	  // 비동기작업이 순차적으로 진행될 때 promise 필요하므로 ajax 을 사용하면 다시 promise를 사용해야 한다.
+	  
+	  // 중복 통과 지점
+	  if(resData.enableEmail){
+		  // 인증코드 이메일 보내기
+		  fetch(fnGetContextPath() + '/user/sendCode.do',{
+			  method: 'POST',
+			  headers: {
+			    'Content-Type': 'application/json'
+			  },
+			  body: JSON.stringify({
+			    'email': email.value
+			  })
+		  });
+	  } else {
+		  // 같은 이메일이 있을 때
+		  document.getElementById('msg-email').innerHTML = '이미 사용 중인 이메일입니다.';
+		  return;
+	  }
+  })
+}
+
+document.getElementById('btn-code').addEventListener('click',fnCheckEmail);
+
+  
+</script>
+  
+</body>
+</html>
