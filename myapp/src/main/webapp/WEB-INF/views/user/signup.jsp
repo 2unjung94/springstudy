@@ -20,7 +20,7 @@
 
 <style>
   @import url('https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css');
-  @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@100..900&display=swap')
+  @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@100..900&display=swap');
   * {
     font-family: "Noto Sans KR", sans-serif;
     font-weight: 400;
@@ -35,7 +35,9 @@
   <form method="POST"
         action="${contextPath}/user/signup.do"
         id="frm-signup">
-  
+    
+    <!-- 부트스트랩 - 클래스 속성 사용하면 된다
+    mb-3 : 아래에 margin 을 3 준다 -->
     <div class="mb-3">
       <label for="inp-email">아이디</label>
       <input type="text" id="inp-email" name="email" placeholder="example@example.com">
@@ -48,17 +50,16 @@
     </div>
   
   </form>
-
+  
 <script>
 
 const fnGetContextPath = ()=>{
-  const host = location.host;  /* localhost:8080 */
-  const url = location.href;   /* http://localhost:8080/mvc/getDate.do */
-  const begin = url.indexOf(host) + host.length;
-  const end = url.indexOf('/', begin + 1);
-  return url.substring(begin, end);
+ const host = location.host;  /* localhost:8080 */
+ const url = location.href;   /* http://localhost:8080/mvc/getDate.do */
+ const begin = url.indexOf(host) + host.length;
+ const end = url.indexOf('/', begin + 1);
+ return url.substring(begin, end);
 }
-
 
 const fnCheckEmail = ()=>{
 	
