@@ -66,7 +66,7 @@
       , #{eventAgree}
       , 0
       , CURRENT_DATE
-      , CURRENT_DATE
+      , NULL
     )
   </insert>
 
@@ -75,4 +75,13 @@
       FROM USER_T
      WHERE USER_NO = #{userNo}
   </delete>
+  
+  <update id="signoutUser">
+    UPDATE ACCESS_HISTORY_T
+       SET SIGNOUT_DT = CURRENT_DATE
+    <where>
+      <if test="email!=null">EMAIL = #{email}</if>
+    </where>
+     
+  </update>
 </mapper>

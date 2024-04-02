@@ -1,6 +1,8 @@
 package com.gdu.myapp.service;
 
 import java.io.PrintWriter;
+import java.math.BigInteger;
+import java.security.SecureRandom;
 import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
@@ -27,56 +29,7 @@ public class UserServiceImpl implements UserService {
     this.userMapper = userMapper;
     this.myJavaMailUtils = myJavaMailUtils;
   }
-  
 
-  @Override
-  public void signin(HttpServletRequest request, HttpServletResponse response) {
-    
-    try {
-      
-      // 입력한 아이디
-      String email = request.getParameter("email");
-      
-      // 입력한 비밀번호 + SHA-256 방식의 암호화
-      String pw = MySecurityUtils.getSha256(request.getParameter("pw"));
-      
-      // 접속 IP (접속 기록을 남길 때 필요한 정보)
-      String ip = request.getRemoteAddr();
-      
-      // DB로 보낼 정보 (email/pw: USER_T , email/ip: ACCESS_HISTORY_T) 
-      Map<String, Object> params = Map.of("email", email
-                                        , "pw", pw
-                                        , "ip", ip);
-      
-      // email/pw 가 일치하는 회원 정보 가져오기
-      UserDto user = userMapper.getUserByMap(params);
-      
-      // 일치하는 회원 있음 (Sign In 성공)
-      if(user != null) {
-        // 접속 기록 ACCESS_HISTORY_T 에 남기기
-        userMapper.insertAccessHistory(params);
-        // 회원 정보를 세션(브라우저 닫기 전까지 정보가 유지되는 공간, 기본 30분 정보 유지)에 보관하기
-        request.getSession().setAttribute("user", user);
-        // Sign In 후 페이지 이동
-        response.sendRedirect(request.getParameter("url"));
-      
-      // 일치하는 회원 없음 (Sign In 실패)
-      } else {
-        response.setContentType("text/html; charset=UTF-8");
-        PrintWriter out = response.getWriter();
-        out.println("<script>");
-        out.println("alert('일치하는 회원 정보가 없습니다.')");
-        out.println("location.href='" + request.getContextPath() + "/main.page'");
-        out.println("</script>");
-        out.flush();
-        out.close();
-      }
-      
-    } catch (Exception e) {
-      e.printStackTrace();
-    }
-    
-  }
 
   @Override
   public ResponseEntity<Map<String, Object>> checkEmail(Map<String, Object> params) {
@@ -220,8 +173,122 @@ public class UserServiceImpl implements UserService {
   }
   
   @Override
+  public String getRedirectURLAfterSignin(HttpServletRequest request) {
+    
+    // Sign In 페이지 이전의 주소가 저장되어 있는 Request Header 의 referer 값 확인
+    String referer = request.getHeader("referer");
+    
+    // referer 로 돌아가면 안 되는 예외 상황 (아이디/비밀번호 찾기 화면, 가입 화면 등)
+    String[] excludeUrls = {"/findId.page", "/findPw.page", "/signup.page"};
+    
+    // Sign In 이후 이동할 url
+    String url = referer;
+    if(referer != null) {
+      for(String excludeUrl : excludeUrls) {
+        if(referer.contains(excludeUrl)) {
+          url = request.getContextPath() + "/main.page";
+          break;
+        }
+      }
+    } else {
+      url = request.getContextPath() + "/main.page";
+    }
+    
+    return url;
+  }
+  
+  @Override
+  public String getNaverLoginURL(HttpServletRequest request) {
+    /************* 네이버 로그인 1 *************/
+    // 네이버 로그인 요청 주소를 만들어서 반환하는 메소드
+    String redirectUri = "http://localhost:8080" + request.getContextPath() + "/user/naver/getAccessToken.do";
+    String state = new BigInteger(130, new SecureRandom()).toString();
+    
+    StringBuilder builder = new StringBuilder();
+    builder.append("https://nid.naver.com/oauth2.0/authorize");
+    builder.append("?response_type=code");
+    builder.append("&client_id=NSIlxRD3gSk0BEHeKhk4");
+    builder.append("&redirect_uri=" + redirectUri);
+    builder.append("&state=" + state);
+    
+    return builder.toString();
+  }
+  
+  @Override
+  public void signin(HttpServletRequest request, HttpServletResponse response) {
+    
+    try {
+      
+      // 입력한 아이디
+      String email = request.getParameter("email");
+      
+      // 입력한 비밀번호 + SHA-256 방식의 암호화
+      String pw = MySecurityUtils.getSha256(request.getParameter("pw"));
+      
+      // 접속 IP (접속 기록을 남길 때 필요한 정보)
+      String ip = request.getRemoteAddr();
+      
+      // DB로 보낼 정보 (email/pw: USER_T , email/ip: ACCESS_HISTORY_T) 
+      Map<String, Object> params = Map.of("email", email
+                                        , "pw", pw
+                                        , "ip", ip);
+      
+      // email/pw 가 일치하는 회원 정보 가져오기
+      UserDto user = userMapper.getUserByMap(params);
+      
+      // 일치하는 회원 있음 (Sign In 성공)
+      if(user != null) {
+        // 접속 기록 ACCESS_HISTORY_T 에 남기기
+        userMapper.insertAccessHistory(params);
+        // 회원 정보를 세션(브라우저 닫기 전까지 정보가 유지되는 공간, 기본 30분 정보 유지)에 보관하기
+        request.getSession().setAttribute("user", user);
+        // Sign In 후 페이지 이동
+        response.sendRedirect(request.getParameter("url"));
+      
+      // 일치하는 회원 없음 (Sign In 실패)
+      } else {
+        response.setContentType("text/html; charset=UTF-8");
+        PrintWriter out = response.getWriter();
+        out.println("<script>");
+        out.println("alert('일치하는 회원 정보가 없습니다.')");
+        out.println("location.href='" + request.getContextPath() + "/main.page'");
+        out.println("</script>");
+        out.flush();
+        out.close();
+      }
+      
+    } catch (Exception e) {
+      e.printStackTrace();
+    }
+    
+  }
+  
+  @Override
   public void signout(HttpServletRequest request, HttpServletResponse response) {
-    HttpSession session = request.getSession();
+    
+    try {
+      HttpSession session = request.getSession();
+      UserDto user = (UserDto) session.getAttribute("user");
+      
+      if(user == null) {
+        response.sendRedirect(request.getContextPath() + "/main.page");
+      }
+      
+      userMapper.signoutUser(user.getEmail());
+      
+      response.setContentType("text/html");
+      session.invalidate();
+      PrintWriter out = response.getWriter();
+      out.println("<script>");
+      out.println("alert('로그아웃 되었습니다.');");
+      out.println("location.href='" + request.getContextPath()  + "/main.page';");
+      out.println("</script>");
+      out.flush();
+      out.close();
+      
+    } catch (Exception e) {
+      e.printStackTrace();
+    }
 
   }
 
