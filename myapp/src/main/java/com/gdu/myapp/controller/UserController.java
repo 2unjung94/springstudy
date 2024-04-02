@@ -4,6 +4,7 @@ import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
 
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
@@ -12,7 +13,9 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.SessionAttribute;
 
+import com.gdu.myapp.dto.UserDto;
 import com.gdu.myapp.service.UserService;
 
 @RequestMapping("/user")
@@ -83,8 +86,25 @@ public class UserController {
     userService.signup(request, response);
   }
   
-  
-  
+//  세션에 저장된 로그인 정보 가져오기
+  // 1번
+  @GetMapping("/leave.do")
+  public void leave(HttpServletRequest request, HttpServletResponse response) {
+    userService.leave(request, response);
+  }
+
+  /*
+  // 2번
+  @GetMapping("/leave.do")
+  public void leave(HttpSession session, HttpServletResponse response) {
+    UserDto user = (UserDto) session.getAttribute("user");
+  }  
+  // 3번
+  @GetMapping("/leave.do")
+  public void leave(@SessionAttribute(name="user") UserDto user, HttpServletResponse response) {
+    
+  }
+ */
   
   
 }

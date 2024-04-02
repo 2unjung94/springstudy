@@ -5,6 +5,7 @@ import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -176,15 +177,53 @@ public class UserServiceImpl implements UserService {
   }
   
   @Override
+  public void leave(HttpServletRequest request, HttpServletResponse response) {
+    
+    try {
+      // 세션에 저장된 user 값 확인
+      HttpSession session = request.getSession();
+      UserDto user = (UserDto) session.getAttribute("user");
+    
+      // 세션 만료로 user 정보가 세션에 없을 수 있음
+      if(user == null) {
+        response.sendRedirect(request.getContextPath() + "/main.page");
+      }
+    
+      // 탈퇴 처리 (user.getUserNo()로 꺼내서 전달하거나 user를 통으로 전달하거나)
+      int deleteCount = userMapper.deleteUser(user.getUserNo());
+    
+      // 탈퇴 이후 응답 만들기
+      response.setContentType("text/html");
+      PrintWriter out = response.getWriter();
+      out.println("<script>");
+      
+      // 탈퇴 성공
+      if(deleteCount == 1) {
+        
+        // 세션에 저장된 모든 정보 초기화 (02_spring_mvc 컨트롤러 6번 참고)
+        session.invalidate();   // SessionStatus 객체의 setComplete() 메소드 호출도 같은 역할을 한다. (컨트롤러에서 SessionStatus 를 만들어 서비스에 전달해야 한다)
+        
+        out.println("alert('탈퇴되었습니다. 이용해 주셔서 감사합니다.');");
+        out.println("location.href='" + request.getContextPath() + "/main.page';");     
+        
+      // 탈퇴 실패
+      } else {
+        out.println("alert('탈퇴되지 않았습니다.');");
+        out.println("history.back();");
+      }
+      out.println("</script>");
+      
+    } catch (Exception e) {
+      e.printStackTrace();
+    }
+    
+  }
+  
+  @Override
   public void signout(HttpServletRequest request, HttpServletResponse response) {
     // TODO Auto-generated method stub
 
   }
 
-  @Override
-  public void leave(HttpServletRequest request, HttpServletResponse response) {
-    // TODO Auto-generated method stub
-
-  }
 
 }

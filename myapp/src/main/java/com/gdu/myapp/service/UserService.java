@@ -12,7 +12,7 @@ public interface UserService {
   ResponseEntity<Map<String, Object>> checkEmail(Map<String, Object> params);
   ResponseEntity<Map<String, Object>> sendCode(Map<String, Object> params);
   void signup(HttpServletRequest request, HttpServletResponse response);  
+  void leave(HttpServletRequest request, HttpServletResponse response);
 
   void signout(HttpServletRequest request, HttpServletResponse response);
-  void leave(HttpServletRequest request, HttpServletResponse response);
 }

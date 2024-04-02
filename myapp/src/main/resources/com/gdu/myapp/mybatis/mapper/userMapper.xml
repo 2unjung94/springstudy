@@ -70,4 +70,9 @@
     )
   </insert>
 
+  <delete id="deleteUser">
+    DELETE 
+      FROM USER_T
+     WHERE USER_NO = #{userNo}
+  </delete>
 </mapper>
