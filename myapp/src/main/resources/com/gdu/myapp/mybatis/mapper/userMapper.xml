@@ -5,10 +5,6 @@
 
 <mapper namespace="com.gdu.myapp.mapper.UserMapper">
 
-<!-- WHERE 태그 사용 이유 : WHERE AND 를 막기 위해
-     이메일은 없고 비밀번호만 왔을때 쿼리문이
-     WHERE AND PW = #{pw} 이 되므로 오류 발생됨
- -->
   <select id="getUserByMap"
           parameterType="Map"
           resultType="UserDto">
@@ -19,23 +15,24 @@
       <if test="pw!=null">AND PW = #{pw}</if>
     </where>
   </select>
- 
+
   <insert id="insertAccessHistory"
           parameterType="Map">
-    INSERT INTO ACCESS_HISTORY_T(
-      ACCESS_HISTORY_NO
-    , EMAIL
-    , IP
-    , SIGNIN_DT
-    , SIGNOUT_DT
+    INSERT INTO ACCESS_HISTORY_T (
+        ACCESS_HISTORY_NO
+      , EMAIL
+      , IP
+      , SIGNIN_DT
+      , SIGNOUT_DT
     ) VALUES (
         ACCESS_HISTORY_SEQ.NEXTVAL
       , #{email}
       , #{ip}
       , CURRENT_DATE
-      , NULL)   
+      , NULL
+    )
   </insert>
-  
+
   <select id="getLeaveUserByMap"
           parameterType="Map"
           resultType="LeaveUserDto">
@@ -43,11 +40,9 @@
       FROM LEAVE_USER_T
     <where>
       <if test="email!=null">EMAIL = #{email}</if>
-      <if test="pw!=null">AND PW = #{pw}</if>
     </where>
   </select>
-  
-    
+
   <insert id="insertUser"
           parameterType="UserDto">
     INSERT INTO USER_T (
@@ -70,7 +65,7 @@
       , #{mobile}
       , #{eventAgree}
       , 0
-      , NULL
+      , CURRENT_DATE
       , CURRENT_DATE
     )
   </insert>

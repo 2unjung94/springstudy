@@ -11,4 +11,3 @@ public interface UserMapper {
   LeaveUserDto getLeaveUserByMap(Map<String, Object> map);
   int insertUser(UserDto user);
 }
- 

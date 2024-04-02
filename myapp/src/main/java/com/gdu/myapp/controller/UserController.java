@@ -18,6 +18,7 @@ import com.gdu.myapp.service.UserService;
 @RequestMapping("/user")
 @Controller
 public class UserController {
+
   private final UserService userService;
 
   public UserController(UserService userService) {
@@ -26,8 +27,8 @@ public class UserController {
   }
   
   // request header 안의 "referer"에 이전 주소가 있음
-  // 로그인 후 돌아갈 주소 = referer 의 값
-  @GetMapping(value="/signin.page")
+  // 로그인 후 돌아갈 주소 = referer 의 값  
+  @GetMapping("/signin.page")
   public String signinPage(HttpServletRequest request
                          , Model model) {
     
@@ -39,8 +40,6 @@ public class UserController {
     
     // Sign In 이후 이동할 url
     String url = referer;
-    
-    // referer == null 이면 사이트 오자마자 로그인 한 것
     if(referer != null) {
       for(String excludeUrl : excludeUrls) {
         if(referer.contains(excludeUrl)) {
@@ -52,10 +51,11 @@ public class UserController {
       url = request.getContextPath() + "/main.page";
     }
     
-    // Sign In 페이지로 url 넘겨주기
-    model.addAttribute("url", url);
+    // Sign In 페이지로 url 넘겨 주기
+    model.addAttribute("url",  url);
     
     return "user/signin";
+    
   }
   
   @PostMapping("/signin.do")
@@ -69,12 +69,22 @@ public class UserController {
   }
   
   @PostMapping(value="/checkEmail.do", produces="application/json")
-  public ResponseEntity<Map<String , Object>> checkEmail(@RequestBody Map<String, Object> params){
+  public ResponseEntity<Map<String, Object>> checkEmail(@RequestBody Map<String, Object> params) {
     return userService.checkEmail(params);
   }
   
   @PostMapping(value="/sendCode.do", produces="application/json")
-  public ResponseEntity<Map<String, Object>> sendCode(@RequestBody Map<String, Object> params){
+  public ResponseEntity<Map<String, Object>> sendCode(@RequestBody Map<String, Object> params) {
     return userService.sendCode(params);
   }
+  
+  @PostMapping("/signup.do")
+  public void signup(HttpServletRequest request, HttpServletResponse response) {
+    userService.signup(request, response);
+  }
+  
+  
+  
+  
+  
 }

@@ -15,12 +15,10 @@ import org.springframework.context.annotation.PropertySource;
 import org.springframework.core.env.Environment;
 import org.springframework.stereotype.Component;
 
-// properties 파일 읽어들이는 방법
-// classpath : src/main/resources 까지를 의미함
 @PropertySource(value = "classpath:email.properties")
 @Component
 public class MyJavaMailUtils {
-  
+
   @Autowired
   private Environment env;
   
@@ -52,7 +50,7 @@ public class MyJavaMailUtils {
       mimeMessage.setContent(content, "text/html; charset=UTF-8");
       
       // 메일 보내기
-      Transport.send(mimeMessage);      
+      Transport.send(mimeMessage);
       
     } catch (Exception e) {
       e.printStackTrace();
