@@ -90,6 +90,9 @@ public class UserServiceImpl implements UserService {
     // 인증코드 생성
     String code = MySecurityUtils.getRandomString(6, true, true);
     
+    // 개발할 때 인증코드 찍어보기
+    System.out.println("인증코드 : " + code);
+    
     // 메일 보내기
     myJavaMailUtils.sendMail((String)params.get("email")
                            , "myapp 인증요청"
@@ -101,13 +104,66 @@ public class UserServiceImpl implements UserService {
   }
 
   @Override
-  public void signout(HttpServletRequest request, HttpServletResponse response) {
-    // TODO Auto-generated method stub
-
-  }
-
-  @Override
   public void signup(HttpServletRequest request, HttpServletResponse response) {
+    
+    // 전달된 파라미터
+    String email = request.getParameter("email");
+    String pw = MySecurityUtils.getSha256(request.getParameter("pw"));
+    String name = MySecurityUtils.getPreventXss(request.getParameter("name"));
+    String mobile = request.getParameter("mobile");
+    String gender = request.getParameter("gender");
+    String event = request.getParameter("event");
+    
+    // Mapper 로 보낼 UserDto 객체 생성
+    UserDto user = UserDto.builder()
+                      .email(email)
+                      .pw(pw)
+                      .name(name)
+                      .mobile(mobile)
+                      .gender(gender)
+                      .eventAgree(event == null ? 0 : 1)
+                    .build();
+    
+    // 회원 가입
+    int insertCount = userMapper.insertUser(user);
+    
+    // 응답 만들기 (성공하면 sign in 처리하고 /main.do 이동, 실패하면 뒤로 가기)
+    try {
+      response.setContentType("text/html; charset=UTF-8");
+      PrintWriter out = response.getWriter();
+      out.println("<script>");
+      // 가입 성공
+      if(insertCount == 1) {
+        
+        // Sign In 및 접속 기록을 위한 Map
+        Map<String, Object> map = Map.of("email", email
+                                       , "pw", pw 
+                                       , "ip", request.getRemoteAddr());
+        
+        // Sign In (세션에 user 저장하기)
+        request.getSession().setAttribute("user", userMapper.getUserByMap(map));
+        
+        // 접속 기록 남기기
+        userMapper.insertAccessHistory(map);
+        
+        out.println("alert('회원 가입되었습니다.');");
+        out.println("location.href='" + request.getContextPath() + "/main.do';");
+      // 가입 실패
+      } else {
+        out.println("alert('회원 가입이 실패했습니다.');");
+        out.println("history.back();");
+      }
+      out.println("</script>");
+      
+      out.flush();
+      out.close();
+    } catch (Exception e) {
+      e.printStackTrace();
+    }    
+  }
+  
+  @Override
+  public void signout(HttpServletRequest request, HttpServletResponse response) {
     // TODO Auto-generated method stub
 
   }

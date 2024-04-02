@@ -50,8 +50,29 @@
     
   <insert id="insertUser"
           parameterType="UserDto">
-    INSERT INTO USER_T
-    VALUES (1, 'ABC@EMAIL.COM', '1111', 'ABC', 'MAN', '01011111111', 0, 0, CURRENT_DATE, CURRENT_DATE)        
+    INSERT INTO USER_T (
+        USER_NO
+      , EMAIL
+      , PW
+      , NAME
+      , GENDER
+      , MOBILE
+      , EVENT_AGREE
+      , SIGNUP_KIND
+      , PW_MODIFY_DT
+      , SIGNUP_DT
+    ) VALUES (
+        USER_SEQ.NEXTVAL
+      , #{email}
+      , #{pw}
+      , #{name}
+      , #{gender}
+      , #{mobile}
+      , #{eventAgree}
+      , 0
+      , NULL
+      , CURRENT_DATE
+    )
   </insert>
 
 </mapper>
