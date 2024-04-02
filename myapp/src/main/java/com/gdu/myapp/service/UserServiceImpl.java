@@ -221,7 +221,7 @@ public class UserServiceImpl implements UserService {
   
   @Override
   public void signout(HttpServletRequest request, HttpServletResponse response) {
-    // TODO Auto-generated method stub
+    HttpSession session = request.getSession();
 
   }
 

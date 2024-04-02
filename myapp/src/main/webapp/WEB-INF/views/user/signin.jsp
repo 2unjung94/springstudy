@@ -38,6 +38,11 @@
         <input type="hidden" name="url" value="${url}">
         <button type="submit">Sign In</button>
       </div>
+      <div>
+        <a href="${naverLoginUrl}">
+          <img src="${contextPath}/resources/2021_Login_with_naver_guidelines_Kr/btnG_아이콘원형.png">
+        </a>
+      </div>
     </form>
   </div>
     

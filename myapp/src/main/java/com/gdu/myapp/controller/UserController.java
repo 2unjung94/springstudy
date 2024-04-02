@@ -1,5 +1,7 @@
 package com.gdu.myapp.controller;
 
+import java.math.BigInteger;
+import java.security.SecureRandom;
 import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
@@ -57,6 +59,19 @@ public class UserController {
     // Sign In 페이지로 url 넘겨 주기
     model.addAttribute("url",  url);
     
+    /**************** 네이버 로그인 1*/
+    String redirectUri = "http://localhost:8080" + request.getContextPath() + "/user/naver/getAccessToken.do";
+    String state = new BigInteger(130, new SecureRandom()).toString();
+    
+    StringBuilder builder = new StringBuilder();
+    builder.append("https://nid.naver.com/oauth2.0/authorize");
+    builder.append("?response_type=code");
+    builder.append("&client_id=z_izclq2vTJpzlxwLjs5");
+    builder.append("&redirect_uri=" + redirectUri);
+    builder.append("&state=" + state);
+    
+    model.addAttribute("naverLoginUrl", builder.toString());
+    
     return "user/signin";
     
   }
@@ -106,5 +121,9 @@ public class UserController {
   }
  */
   
+  @GetMapping("/signout.do")
+  public void signout(HttpServletRequest request, HttpServletResponse response) {
+    userService.signout(request, response);
+  }
   
 }
