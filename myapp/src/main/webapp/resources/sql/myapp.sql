@@ -52,14 +52,14 @@ CREATE TABLE LEAVE_USER_T (
   CONSTRAINT PK_LEAVE_USER PRIMARY KEY(LEAVE_USER_NO)
 );
 
--- 계층형 게시판 (댓글과 원문을 하나에 테이블로) (N차 댓글)
+-- 계층형 게시판 (답글과 원문을 하나에 테이블로) (N차 댓글)
 CREATE TABLE BBS_T(
   BBS_NO      NUMBER              NOT NULL,
   CONTENTS    VARCHAR2(4000 BYTE) NOT NULL,
   USER_NO     NUMBER              NOT NULL,
   CREATE_DT   DATE                NULL,
   STATE       NUMBER              NULL,     -- 0:삭제, 1:정상
-  DEPTH       NUMBER              NULL,     -- 0:원글, 1:댓글, 2:대댓글,  ...
+  DEPTH       NUMBER              NULL,     -- 0:원글, 1:답글, 2:답답글,  ...
   GROUPT_NO   NUMBER              NULL,     -- 원글과 원글에 달린 모든 댓글들은 동일한 GROUP_NO를 가짐
   GROUP_ORDER NUMBER              NULL,     -- 같은 GROUP_NO 내부에서 표시할 순서
   CONSTRAINT PK_BBS PRIMARY KEY(BBS_NO),
