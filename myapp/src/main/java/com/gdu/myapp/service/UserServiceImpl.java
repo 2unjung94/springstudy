@@ -1,7 +1,11 @@
 package com.gdu.myapp.service;
 
+import java.io.BufferedReader;
+import java.io.InputStreamReader;
 import java.io.PrintWriter;
 import java.math.BigInteger;
+import java.net.HttpURLConnection;
+import java.net.URL;
 import java.security.SecureRandom;
 import java.util.Map;
 
@@ -9,6 +13,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
+import org.json.JSONObject;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
@@ -29,7 +34,6 @@ public class UserServiceImpl implements UserService {
     this.userMapper = userMapper;
     this.myJavaMailUtils = myJavaMailUtils;
   }
-
 
   @Override
   public ResponseEntity<Map<String, Object>> checkEmail(Map<String, Object> params) {
@@ -198,23 +202,6 @@ public class UserServiceImpl implements UserService {
   }
   
   @Override
-  public String getNaverLoginURL(HttpServletRequest request) {
-    /************* 네이버 로그인 1 *************/
-    // 네이버 로그인 요청 주소를 만들어서 반환하는 메소드
-    String redirectUri = "http://localhost:8080" + request.getContextPath() + "/user/naver/getAccessToken.do";
-    String state = new BigInteger(130, new SecureRandom()).toString();
-    
-    StringBuilder builder = new StringBuilder();
-    builder.append("https://nid.naver.com/oauth2.0/authorize");
-    builder.append("?response_type=code");
-    builder.append("&client_id=NSIlxRD3gSk0BEHeKhk4");
-    builder.append("&redirect_uri=" + redirectUri);
-    builder.append("&state=" + state);
-    
-    return builder.toString();
-  }
-  
-  @Override
   public void signin(HttpServletRequest request, HttpServletResponse response) {
     
     try {
@@ -292,5 +279,184 @@ public class UserServiceImpl implements UserService {
 
   }
 
+  @Override
+  public String getNaverLoginURL(HttpServletRequest request) {
+    
+    /************* 네이버 로그인 1 *************/
+    // 네이버 로그인 요청 주소를 만들어서 반환하는 메소드
+    String redirectUri = "http://localhost:8080" + request.getContextPath() + "/user/naver/getAccessToken.do";
+    String state = new BigInteger(130, new SecureRandom()).toString();
+    
+    StringBuilder builder = new StringBuilder();
+    builder.append("https://nid.naver.com/oauth2.0/authorize");
+    builder.append("?response_type=code");
+    builder.append("&client_id=z_izclq2vTJpzlxwLjs5");
+    builder.append("&redirect_uri=" + redirectUri);
+    builder.append("&state=" + state);
+    
+    return builder.toString();
+    
+  }
+  
+  @Override
+  public String getNaverLoginAccessToken(HttpServletRequest request) {
+    /************* 네이버 로그인 2 *************/
+    // 네이버로부터 Access Token 을 발급 받아 반환하는 메소드
+    // 네이버 로그인 1단계에서 전달한 redirect_uri 에서 동작하는 서비스
+    // code 와 state 파라미터를 받아서 Access Token 을 발급 받을 때 사용
+    
+    String spec = "https://nid.naver.com/oauth2.0/token";
+    String grantType = "authorization_code";
+    
+    String clientId = "z_izclq2vTJpzlxwLjs5";
+    String clientSecret = "Uy_fgCrSaK";
+    String code = request.getParameter("code");
+    String state = request.getParameter("state");
+    
+    StringBuilder builder = new StringBuilder();
+    builder.append(spec);
+    builder.append("?grant_type=" + grantType);
+    builder.append("&client_id=" + clientId);
+    builder.append("&client_secret=" + clientSecret);
+    builder.append("&code=" + code);
+    builder.append("&state=" + state);
+    
+    HttpURLConnection con = null;
+    JSONObject obj = null;
+    
+    try {
+    
+      // 요청
+      URL url = new URL(builder.toString());
+      con = (HttpURLConnection) url.openConnection();
+      con.setRequestMethod("GET");  // 반드시 대문자로 작성해야 한다.
+      
+      // 응답 스트림 생성
+      BufferedReader reader = null;
+      int responseCode = con.getResponseCode();
+      if(responseCode == HttpURLConnection.HTTP_OK) {
+        reader = new BufferedReader(new InputStreamReader(con.getInputStream()));
+      } else {
+        reader = new BufferedReader(new InputStreamReader(con.getErrorStream()));
+      }
+      
+      // 응답 데이터 받기
+      String line = null;
+      StringBuilder responseBody = new StringBuilder();
+      while((line = reader.readLine()) != null) {
+        responseBody.append(line);
+      }
+      
+      // 응답 데이터를 JSON 객체로 변환
+      obj = new JSONObject(responseBody.toString());
+      
+      // 응답 스트림 닫기
+      reader.close();
+      
+    } catch (Exception e) {
+      e.printStackTrace();
+    }
+    
+    con.disconnect();
+    
+    return obj.getString("access_token");
+  }
+  
+  @Override
+  public UserDto getNaverLoginProfile(String accessToken) {
+    
+    /************* 네이버 로그인 3 *************/
+    // 네이버로부터 프로필 정보(이메일, [이름, 성별, 휴대전화번호]) 를 발급 받아 반환하는 메소드
+    
+    String spec = "https://openapi.naver.com/v1/nid/me";
+    
+    HttpURLConnection con = null;
+    UserDto user = null;
+    
+    try {
+      
+      // 요청
+      URL url = new URL(spec);
+      con = (HttpURLConnection) url.openConnection();
+      con.setRequestMethod("GET");
+      
+      // 요청 헤더
+      con.setRequestProperty("Authorization", "Bearer " + accessToken);
+      
+      // 응답 스트림 생성
+      BufferedReader reader = null;
+      int responseCode = con.getResponseCode();
+      if(responseCode == HttpURLConnection.HTTP_OK) {
+        reader = new BufferedReader(new InputStreamReader(con.getInputStream()));
+      } else {
+        reader = new BufferedReader(new InputStreamReader(con.getErrorStream()));
+      }
+      
+      // 응답 데이터 받기
+      String line = null;
+      StringBuilder responseBody = new StringBuilder();
+      while((line = reader.readLine()) != null) {
+        responseBody.append(line);
+      }
+      
+      // 응답 데이터를 JSON 객체로 변환
+      /*
+       * 응답 JSON 구조
+       * {
+       * "resultcode": xx,
+       * "message": xx,
+       * "response": {
+       *   "id": 네이버아이디아님(그냥식별자),
+       *   "name": xx
+       *   ...
+       *   "mobile": xx
+       *   }
+       *  
+       * }
+       * 
+       * JSONObject 가 2개 필요 하다
+       * JSONObject obj = new JSONObject(responseBody.toString())   -> 전체
+       * JSONObject response = obj.getJSONObject("response");       -> response 부분 추출
+       */
+      JSONObject resData = new JSONObject(responseBody.toString());
+      JSONObject response = resData.getJSONObject("response");
+
+      user = UserDto.builder()
+                .email(response.getString("email"))
+                .gender(response.has("gender") ? response.getString("gender") : null)
+                .name(response.has("name") ? response.getString("name") : null)
+                .mobile(response.has("mobile") ? response.getString("mobile") : null)
+              .build();
+      
+      // 응답 스트림 닫기
+      reader.close();
+      
+      
+    } catch (Exception e) {
+      e.printStackTrace();
+    }
+    
+    con.disconnect();
+    
+    return user;
+  }
+
+  @Override
+  public boolean hasUser(UserDto user) {
+    // null 이 아니면 true 반환
+    return userMapper.getUserByMap(Map.of("email", user.getEmail())) != null;
+  }
+
+  @Override
+  public void naverSignin(HttpServletRequest request, UserDto naverUser) {
+    
+    Map<String, Object> map = Map.of("email", naverUser.getEmail(),
+                                     "ip", request.getRemoteAddr());
+    
+    UserDto user = userMapper.getUserByMap(map);
+    request.getSession().setAttribute("user", user);
+    userMapper.insertAccessHistory(map);
+    
+  }
 
 }

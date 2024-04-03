@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 
+import com.gdu.myapp.dto.UserDto;
 import com.gdu.myapp.service.UserService;
 
 @RequestMapping("/user")
@@ -40,11 +41,6 @@ public class UserController {
     
     return "user/signin";
     
-  }
-  
-  @PostMapping("/signin.do")
-  public void signin(HttpServletRequest request, HttpServletResponse response) {
-    userService.signin(request, response);
   }
   
   @GetMapping("/signup.page")
@@ -86,6 +82,41 @@ public class UserController {
     
   }
  */
+  
+  @PostMapping("/signin.do")
+  public void signin(HttpServletRequest request, HttpServletResponse response) {
+    userService.signin(request, response);
+  }
+  
+  @GetMapping("/naver/getAccessToken.do")
+  public String getAccessToken(HttpServletRequest request) {
+    String accessToken = userService.getNaverLoginAccessToken(request);
+    
+    // return "사용자정보요청?accessToken=" + accessToken;
+    return "redirect:/user/naver/getProfile.do?accessToken=" + accessToken;
+  }
+  
+  @GetMapping("/naver/getProfile.do")
+  public String getProfile(HttpServletRequest request, Model model) {
+    
+    // 네이버로부터 받은 프로필 정보
+    UserDto naverUser = userService.getNaverLoginProfile(request.getParameter("accessToken"));
+    
+    // 반환 경로
+    String path = null;
+    
+    // 프로필이 DB에 있는지 확인 (있으면 Sign In, 없으면 Sign Up)
+    if(userService.hasUser(naverUser)) {
+      // Sign in
+      userService.naverSignin(request, naverUser);
+      path = "redirect:/main.page";
+    } else {
+      // Sign Up (네이버 가입 화면으로 이동) - model 에 이메일, 
+      model.addAttribute("naverUser", naverUser);
+      path = "user/naver_signup";
+    }
+    return path;
+  }
   
   @GetMapping("/signout.do")
   public void signout(HttpServletRequest request, HttpServletResponse response) {
