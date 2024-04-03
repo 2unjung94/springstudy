@@ -1,5 +1,9 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8"
     pageEncoding="UTF-8"%>
+<%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
+<%@ taglib uri="http://java.sun.com/jsp/jstl/fmt" prefix="fmt" %>
+<c:set var="contextPath" value="<%=request.getContextPath()%>"/>
+<c:set var="dt" value="<%=System.currentTimeMillis()%>"/>
 
 <jsp:include page="../layout/header.jsp">
   <jsp:param value="Sign In" name="title"/>
@@ -24,7 +28,7 @@
     </div>
     <div>
       <a href="${naverLoginURL}">
-        <img src="../../../resources/2021_Login_with_naver_guidelines_Kr/btnG_아이콘원형.png">
+        <img src="${contextPath}/resources/2021_Login_with_naver_guidelines_Kr/btnG_아이콘원형.png">
       </a>
     </div>
   </form>
