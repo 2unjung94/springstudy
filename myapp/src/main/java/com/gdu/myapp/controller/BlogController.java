@@ -9,7 +9,6 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.multipart.MultipartFile;
-import org.springframework.web.multipart.MultipartHttpServletRequest;
 
 import com.gdu.myapp.service.BlogService;
 
@@ -32,8 +31,8 @@ public class BlogController {
   }
   
   @PostMapping(value="/summernote/imageUpload.do", produces="application/json")
-  public ResponseEntity<Map<String, Object>> summernoteImageUpload(@RequestParam("image") MultipartFile multipartFile, MultipartHttpServletRequest multipartRequest){
-    return blogService.summernoteImageUpload(multipartFile, multipartRequest.getContextPath());
+  public ResponseEntity<Map<String, Object>> summernoteImageUpload(@RequestParam("image") MultipartFile multipartFile){
+    return blogService.summernoteImageUpload(multipartFile);
   }
   
 }

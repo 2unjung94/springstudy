@@ -25,7 +25,7 @@ public class BlogServiceImpl implements BlogService {
   private final MyFileUtils myFileUtils;
   
   @Override
-  public ResponseEntity<Map<String, Object>> summernoteImageUpload(MultipartFile multipartFile, String contextPath) {
+  public ResponseEntity<Map<String, Object>> summernoteImageUpload(MultipartFile multipartFile) {
     
     // 이미지 저장할 경로 생성
     String uploadPath = myFileUtils.getUploadPath();
@@ -46,7 +46,7 @@ public class BlogServiceImpl implements BlogService {
     }
     
     // 이미지가 저장된 경로를 Map 으로 반환
-    return new ResponseEntity<>(Map.of("src", contextPath + uploadPath + "/" + filesystemName)
+    return new ResponseEntity<>(Map.of("src", uploadPath + "/" + filesystemName)
                               , HttpStatus.OK);
     
   }

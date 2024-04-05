@@ -8,6 +8,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.multipart.MultipartFile;
 
 public interface BlogService {
-  ResponseEntity<Map<String, Object>> summernoteImageUpload(MultipartFile multipartFile, String contextPath);
+  ResponseEntity<Map<String, Object>> summernoteImageUpload(MultipartFile multipartFile);
   int registerBlog(HttpServletRequest request);
 }

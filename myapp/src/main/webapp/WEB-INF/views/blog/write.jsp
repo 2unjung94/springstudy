@@ -54,6 +54,11 @@
             fetch('${contextPath}/blog/summernote/imageUpload.do', {
               method: 'POST',
               body: formData
+              /*  submit 상황에서는 <form enctype="multipart/form-data"> 필요하지만 fetch 에서는 사용하면 안 된다. 
+              headers: {
+            	  'Content-Type': 'multipart/form-data'
+              }
+              */
             })
             .then(response=>response.json())
             .then(resData=>{
