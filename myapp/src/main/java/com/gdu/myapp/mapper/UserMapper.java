@@ -15,5 +15,5 @@ public interface UserMapper {
   int insertUser(UserDto user);
   int deleteUser(int userNo);
   int insertLeaveUser(Map<String, Object> map);
-  int signoutUser(String email);
+  int updateAccessHistory(String sessionId);
 }

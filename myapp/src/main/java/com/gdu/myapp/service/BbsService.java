@@ -12,4 +12,5 @@ public interface BbsService {
   int registerReply(HttpServletRequest request);
   int removeBbs(int bbsNo);
   void loadBbsSearchList(HttpServletRequest request, Model model);
+  
 }

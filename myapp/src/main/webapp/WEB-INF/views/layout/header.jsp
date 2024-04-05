@@ -7,6 +7,7 @@
 <!DOCTYPE html>
 <html>
 <head>
+
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
@@ -20,16 +21,17 @@
 
 <!-- include libraries(jquery, bootstrap) -->
 <script src="https://code.jquery.com/jquery-3.7.1.min.js" integrity="sha256-/JqT3SQfawRcv/BIHPThkBvs0OEvtFFmqPF/lYI/Cxo=" crossorigin="anonymous"></script>
-<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css">
+<link href="https://stackpath.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css" rel="stylesheet">
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/3.4.1/js/bootstrap.min.js"></script>
 
 <!-- include summernote css/js -->
 <link rel="stylesheet" href="${contextPath}/resources/summernote-0.8.18-dist/summernote.min.css">
 <script src="${contextPath}/resources/summernote-0.8.18-dist/summernote.min.js"></script>
 <script src="${contextPath}/resources/summernote-0.8.18-dist/lang/summernote-ko-KR.min.js"></script>
 
-<!-- include custom css/js 캐싱 방지를 위해 실행할 때 마다 타임스탬프 값을 전달한다. -->
-<link rel="stylesheet" href="${contextPath}/resources/css/init.css?dt=${dt}"> 
-<link rel="stylesheet" href="${contextPath}/resources/css/header.css?dt=${dt}"> 
+<!-- include custom css/js -->
+<link rel="stylesheet" href="${contextPath}/resources/css/init.css?dt=${dt}">
+<link rel="stylesheet" href="${contextPath}/resources/css/header.css?dt=${dt}">
 
 </head>
 <body>
@@ -37,31 +39,32 @@
   <div class="header-wrap">
   
     <div class="logo"></div>
-    
+
     <div class="user-wrap">
       <!-- Sign In 안 된 경우 -->
-        <c:if test="${sessionScope.user == null}">  
-          <a href="${contextPath}/user/signin.page"><i class="fa-solid fa-arrow-right-to-bracket"></i>Sign In</a>
-          <a href="${contextPath}/user/signup.page"><i class="fa-solid fa-user-plus"></i>Sign Up</a>
-        </c:if>
-  
+      <c:if test="${sessionScope.user == null}">  
+        <a href="${contextPath}/user/signin.page"><i class="fa-solid fa-arrow-right-to-bracket"></i>Sign In</a>
+        <a href="${contextPath}/user/signup.page"><i class="fa-solid fa-user-plus"></i>Sign Up</a>
+      </c:if>
       <!-- Sign In 된 경우 -->
-        <c:if test="${sessionScope.user != null}">
-          ${sessionScope.user.name}님 반갑습니다
-          <a href="${contextPath}/user/signout.do">로그아웃</a>
-           <a href="${contextPath}/user/leave.do">회원탈퇴</a>
-        </c:if>
+      <c:if test="${sessionScope.user != null}">
+        ${sessionScope.user.name}님 반갑습니다
+        <a href="${contextPath}/user/signout.do">로그아웃</a>
+        <a href="${contextPath}/user/leave.do">회원탈퇴</a>
+      </c:if>
     </div>
     
     <div class="gnb-wrap">
       <ul class="gnb">
         <li><a href="${contextPath}/bbs/list.do">계층형게시판</a></li>
-        <li><a href="${contextPath}/">댓글형게시판</a></li>
+        <li><a href="${contextPath}/blog/list.do">댓글형게시판</a></li>
         <li><a href="${contextPath}/">첨부형게시판</a></li>
         <li><a href="${contextPath}/">마이페이지</a></li>
       </ul>
     </div>
-  
+    
+    <div>현재 sessionId : <%=session.getId()%></div>
+    
   </div>
 
   <div class="main-wrap">

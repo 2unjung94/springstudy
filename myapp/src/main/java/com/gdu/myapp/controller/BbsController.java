@@ -49,5 +49,10 @@ public class BbsController {
     redirectAttributes.addFlashAttribute("removeBbsCount", bbsService.removeBbs(bbsNo));
     return "redirect:/bbs/list.do";
   }
+  @GetMapping("/search.do")
+  public String search(HttpServletRequest request, Model model) {
+    bbsService.loadBbsSearchList(request, model);
+    return "bbs/list";
+  }
 
 }

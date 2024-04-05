@@ -3,13 +3,19 @@ DROP SEQUENCE USER_SEQ;
 DROP SEQUENCE ACCESS_HISTORY_SEQ;
 DROP SEQUENCE LEAVE_USER_SEQ;
 DROP SEQUENCE BBS_SEQ;
+DROP SEQUENCE BLOG_SEQ;
+DROP SEQUENCE COMMENT_SEQ;
 
 CREATE SEQUENCE USER_SEQ NOCACHE;
 CREATE SEQUENCE ACCESS_HISTORY_SEQ NOCACHE;
 CREATE SEQUENCE LEAVE_USER_SEQ NOCACHE;
 CREATE SEQUENCE BBS_SEQ NOCACHE;
+CREATE SEQUENCE BLOG_SEQ NOCACHE;
+CREATE SEQUENCE COMMENT_SEQ NOCACHE;
 
 /************************* 테이블 *************************/
+DROP TABLE COMMENT_T;
+DROP TABLE BLOG_T;
 DROP TABLE BBS_T;
 DROP TABLE LEAVE_USER_T;
 DROP TABLE ACCESS_HISTORY_T;
@@ -35,6 +41,8 @@ CREATE TABLE ACCESS_HISTORY_T (
   ACCESS_HISTORY_NO NUMBER              NOT NULL,
   EMAIL             VARCHAR2(100 BYTE),
   IP                VARCHAR2(50 BYTE),
+  USER_AGENT        VARCHAR2(150 BYTE),
+  SESSION_ID        VARCHAR2(32 BYTE),
   SIGNIN_DT         DATE,
   SIGNOUT_DT        DATE,
   CONSTRAINT PK_ACCESS_HISTORY PRIMARY KEY(ACCESS_HISTORY_NO),
@@ -60,7 +68,7 @@ CREATE TABLE BBS_T(
   CREATE_DT   DATE                NULL,
   STATE       NUMBER              NULL,     -- 0:삭제, 1:정상
   DEPTH       NUMBER              NULL,     -- 0:원글, 1:답글, 2:답답글,  ...
-  GROUPT_NO   NUMBER              NULL,     -- 원글과 원글에 달린 모든 댓글들은 동일한 GROUP_NO를 가짐
+  GROUP_NO   NUMBER              NULL,     -- 원글과 원글에 달린 모든 댓글들은 동일한 GROUP_NO를 가짐
   GROUP_ORDER NUMBER              NULL,     -- 같은 GROUP_NO 내부에서 표시할 순서
   CONSTRAINT PK_BBS PRIMARY KEY(BBS_NO),
   CONSTRAINT FK_BBS_USER 
@@ -69,7 +77,7 @@ CREATE TABLE BBS_T(
 );
 
 -- 댓글형 게시판
-/*
+
 CREATE TABLE BLOG_T(
   BLOG_NO   NUMBER               NOT NULL,
   TITLE     VARCHAR2(1000 BYTE)  NOT NULL,
@@ -84,7 +92,33 @@ CREATE TABLE BLOG_T(
       REFERENCES USER_T(USER_NO)
         ON DELETE CASCADE
 );
-*/
+
+-- 블로그 댓글(댓글 게시판, 1차 답글만 가능)
+-- 외래키는 운영할 때 NULL 이 좋다 (나중에 넣을 수 있기 때문에)
+CREATE TABLE COMMENT_T (
+  COMMENT_NO NUMBER                 NOT NULL,  -- 번호
+  CONTENTS   VARCHAR2(4000 BYTE)    NOT NULL,  -- 내용 
+  CREATE_DT  DATE                   NULL,      -- 작성일자
+  DEPTH      NUMBER                 NULL,      -- 원글0, 답글1
+  GROUP_NO   NUMBER                 NULL,      -- 원글에 달린 모든 답글은 동일한 GROUP_NO 를 가진다.
+  USER_NO    NUMBER                 NULL,      -- 작성자 정보
+  BLOG_NO    NUMBER                 NULL,      -- 블로그 외래키
+  
+  CONSTRAINT PK_COMMENT PRIMARY KEY(COMMENT_NO),
+  CONSTRAINT FK_COMMENT_USER FOREIGN KEY(USER_NO) 
+    REFERENCES USER_T(USER_NO) ON DELETE CASCADE,
+  CONSTRAINT FK_COMMENT_BLOG FOREIGN KEY(BLOG_NO) 
+    REFERENCES BLOG_T(BLOG_NO) ON DELETE CASCADE
+);
+
+-- 좋아요 테이블(누가 어디에 좋아요 표시를 했음)
+
+
+-- 기초 데이터 (사용자)
+INSERT INTO USER_T VALUES(USER_SEQ.NEXTVAL, 'admin@example.com', STANDARD_HASH('admin', 'SHA256'), '관리자', 'man', '010-1111-1111', 1, 0, CURRENT_DATE, CURRENT_DATE);
+COMMIT;
+
+
 
 /************************* 트리거 *************************/
 /*
@@ -126,8 +160,4 @@ BEGIN
   );
   -- COMMIT; 트리거 내에서는 오류가 있으면 ROLLBACK, 없으면 COMMIT 한다.
 END;
-
-
-
-
 

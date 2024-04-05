@@ -22,12 +22,16 @@
         ACCESS_HISTORY_NO
       , EMAIL
       , IP
+      , USER_AGENT
+      , SESSION_ID
       , SIGNIN_DT
       , SIGNOUT_DT
     ) VALUES (
         ACCESS_HISTORY_SEQ.NEXTVAL
       , #{email}
       , #{ip}
+      , #{userAgent}
+      , #{sessionId}
       , CURRENT_DATE
       , NULL
     )
@@ -76,12 +80,9 @@
      WHERE USER_NO = #{userNo}
   </delete>
   
-  <update id="signoutUser">
+  <update id="updateAccessHistory">
     UPDATE ACCESS_HISTORY_T
        SET SIGNOUT_DT = CURRENT_DATE
-    <where>
-      <if test="email!=null">EMAIL = #{email}</if>
-    </where>
-     
+     WHERE SESSION_ID = #{sessionId} 
   </update>
 </mapper>
