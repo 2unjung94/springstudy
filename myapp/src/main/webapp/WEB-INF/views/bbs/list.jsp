@@ -5,7 +5,9 @@
 <c:set var="contextPath" value="<%=request.getContextPath()%>"/>
 <c:set var="dt" value="<%=System.currentTimeMillis()%>"/>
 
-<jsp:include page="../layout/header.jsp"/>
+<jsp:include page="../layout/header.jsp">
+  <jsp:param value="BBS" name="title"/>
+</jsp:include>
 
 <style>
   .blind {

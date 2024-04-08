@@ -5,7 +5,9 @@
 <c:set var="contextPath" value="<%=request.getContextPath()%>"/>
 <c:set var="dt" value="<%=System.currentTimeMillis()%>"/>
 
-<jsp:include page="../layout/header.jsp"/>
+<jsp:include page="../layout/header.jsp">
+  <jsp:param value="BBS 작성" name="title"/>
+</jsp:include>
 
 <!-- 작성화면 클릭 -> 로그인 체크 인터셉터 -> 작성화면 (세션의 user 정보 사용) -> 서버로 넘김 -->
 <h1 class="title">BBS 작성화면</h1>

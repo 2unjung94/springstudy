@@ -20,6 +20,15 @@
   
   <dependencies>
   
+    <!-- Java HTML Parser -->
+    <!-- https://mvnrepository.com/artifact/org.jsoup/jsoup -->
+    <dependency>
+      <groupId>org.jsoup</groupId>
+      <artifactId>jsoup</artifactId>
+      <version>1.15.4</version>
+    </dependency>
+  
+    <!-- Java 에서 Email 보내기 -->
     <!-- https://mvnrepository.com/artifact/com.sun.mail/javax.mail -->
     <dependency>
       <groupId>com.sun.mail</groupId>
