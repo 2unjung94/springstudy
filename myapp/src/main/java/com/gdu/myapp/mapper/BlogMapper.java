@@ -6,12 +6,26 @@ import java.util.Map;
 import org.apache.ibatis.annotations.Mapper;
 
 import com.gdu.myapp.dto.BlogDto;
+import com.gdu.myapp.dto.CommentDto;
 
 @Mapper
 public interface BlogMapper {
+  // 블로그 글
   int insertBlog(BlogDto blog);
   int getBlogCount();
-  List<BlogDto> getBlogList(Map<String, Object> map);
+  List<BlogDto> getBlogList(Map<String, Object> map); 
+  int updateHit(int blogNo); // 조회수
   BlogDto getBlogByNo(int blogNo);
-
+  int removeBlog(int blogNo);
+  
+  // 댓글
+  int insertComment(CommentDto comment);
+  int getCommentCount(int blogNo);
+  List<CommentDto> getCommentList(Map<String, Object> map);
+  int removeComment(int commentNo); // 삭제
+  
+  // 답글
+  int insertReply(CommentDto comment);
+  
+  
 }

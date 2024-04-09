@@ -4,7 +4,6 @@ import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
 
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -51,18 +50,48 @@ public class BlogController {
     return blogService.getBlogList(request);
   }
   
+  // 조회수 증가 시켜야 하는 경우 updateHit로 진입 후 detail.do 로 진입
+  // 조회수 증가 시키는 경우가 아니면 바로 detail.do 로 진입
+  @GetMapping("/updateHit.do")
+  public String updateHit(@RequestParam int blogNo) {
+    blogService.updateHit(blogNo);
+    return "redirect:/blog/detail.do?blogNo=" + blogNo;
+  }
+  
   @GetMapping("/detail.do")
   public String detail(@RequestParam int blogNo, Model model) {
     model.addAttribute("blog", blogService.getBlogByNo(blogNo));
     return "blog/detail";
   }
   
+  @GetMapping("/remove.do")
+  public String removeBlog(@RequestParam int blogNo) {
+    blogService.removeBlog(blogNo);
+    return "redirect:/blog/list.page";
+  }
+  
   @PostMapping(value="/registerComment.do", produces="application/json")
   public ResponseEntity<Map<String, Object>> registerComment(HttpServletRequest request){
-    System.out.println(request.getParameter("contents"));
-    System.out.println(request.getParameter("blogNo"));
-    System.out.println(request.getParameter("userNo"));
-    return new ResponseEntity<>(null);
+//    return new ResponseEntity<>(Map.of("insertCount", blogService.registerComment(request))
+//                                                , HttpStatus.OK);
+    return ResponseEntity.ok(Map.of("insertCount", blogService.registerComment(request)));
+  }
+  
+  @GetMapping(value="/comment/list.do", produces="application/json")
+  public ResponseEntity<Map<String, Object>> commentList(HttpServletRequest request){
+    // return new ResponseEntity<>(blogService.getCommentList(request), HttpStatus.OK);
+    return ResponseEntity.ok(blogService.getCommentList(request));
+  }
+  
+  @PostMapping(value="/comment/registerReply.do", produces="application/json")
+  public ResponseEntity<Map<String, Object>> registerReply(HttpServletRequest request){
+    return ResponseEntity.ok(Map.of("insertReplyCount", blogService.registerReply(request)));
+  }
+  
+  @GetMapping("/comment/removeComment.do")
+  public String removeComment(HttpServletRequest request, RedirectAttributes redirectAttributes) {
+    redirectAttributes.addFlashAttribute("removeCommentCount", blogService.removeComment(Integer.parseInt(request.getParameter("commentNo"))));
+    return "redirect:/blog/detail.do?blogNo=" + request.getParameter("blogNo");
   }
   
 }

@@ -99,6 +99,7 @@ CREATE TABLE COMMENT_T (
   COMMENT_NO NUMBER                 NOT NULL,  -- 번호
   CONTENTS   VARCHAR2(4000 BYTE)    NOT NULL,  -- 내용 
   CREATE_DT  DATE                   NULL,      -- 작성일자
+  STATE      NUMBER                 NULL,      -- 삭제0, 정상1 (삽입기능수정/관련 DTO 및 RESULTMAP 수정)
   DEPTH      NUMBER                 NULL,      -- 원글0, 답글1
   GROUP_NO   NUMBER                 NULL,      -- 원글에 달린 모든 답글은 동일한 GROUP_NO 를 가진다.
   USER_NO    NUMBER                 NULL,      -- 작성자 정보
